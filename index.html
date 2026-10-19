@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10110f"><title>NowPlaying — Spotify</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="launcher">
+<main class="launch-card">
+  <p class="eyebrow">YOUR PERSONAL MUSIC DISPLAY</p>
+  <h1>NowPlaying<span>.</span></h1>
+  <p class="subtitle">A calm, album-art-led display for whatever you're listening to.</p>
+  <label class="client-label" for="clientId">Spotify Client ID</label>
+  <input id="clientId" autocomplete="off" spellcheck="false" placeholder="Paste your Spotify app Client ID">
+  <p class="hint">Your Client ID is public by design. Never enter a Client Secret here.</p>
+  <div class="actions">
+    <button id="desktopBtn">Desktop mode</button>
+    <button id="projectorBtn" class="secondary">Projector mode</button>
+  </div>
+  <p id="status" role="status" class="status"></p>
+  <button id="disconnectBtn" class="link-button" hidden>Disconnect this browser</button>
+  <p class="footer">Uses Spotify playback metadata and LRCLIB synced lyrics where available.</p>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10110f"><title>NowPlaying — Desktop</title><link rel="stylesheet" href="style.css"></head>
+<body class="display desktop">
+<main class="display-wrap">
+  <button class="back" id="backBtn" aria-label="Back to setup">← Setup</button>
+  <section class="player">
+    <img id="cover" class="cover" alt="Album artwork" src="placeholder.svg">
+    <div class="details">
+      <p class="eyebrow" id="state">SPOTIFY NOW PLAYING</p>
+      <h1 id="track">Waiting for playback</h1>
+      <p id="artist" class="artist">Start playing something on Spotify.</p>
+      <div class="lyrics" id="lyrics" hidden>
+        <p id="prevLyric" class="lyric dim"></p><p id="currentLyric" class="lyric current"></p><p id="nextLyric" class="lyric dim"></p>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+      <div class="times"><span id="elapsed">0:00</span><span id="duration">0:00</span></div>
+      <p id="message" class="message" role="status"></p>
+    </div>
+  </section>
+</main><script src="display.js"></script></body></html>
