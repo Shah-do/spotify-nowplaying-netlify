@@ -301,3 +301,26 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
  .display-wrap{padding:90px 24px 20px!important}
  .player,.projector .player{width:min(1030px,calc((100svh - 120px) * 1.92),calc(100vw - 80px))!important}
 }
+
+/* Clean final composition: one backdrop, one centered glass card */
+.display{background:#080a0d!important;isolation:isolate!important}
+.display:before{display:none!important;content:none!important}
+.artist-backdrop{position:fixed!important;inset:0!important;z-index:-2!important;display:block!important;background-size:cover!important;background-position:center 35%!important;filter:blur(0)!important;opacity:0!important;transform:none!important;transition:opacity .6s ease!important}
+.artist-backdrop.visible{opacity:.68!important}
+.display:after{z-index:-1!important;background:linear-gradient(180deg,rgba(4,6,9,.26),rgba(4,6,9,.48))!important}
+.display-wrap{min-height:100svh!important;height:100svh!important;box-sizing:border-box!important;padding:0 24px!important;display:grid!important;place-items:center!important;position:relative!important;z-index:1!important}
+.topbar{top:clamp(20px,3.5vh,36px)!important;left:clamp(26px,4.2vw,72px)!important;right:clamp(26px,4.2vw,72px)!important}
+.player,.projector .player{position:relative!important;isolation:isolate!important;overflow:hidden!important;width:min(1000px,calc(100vw - 64px),calc((100svh - 130px) * 1.92))!important;max-width:1000px!important;min-height:0!important;height:auto!important;aspect-ratio:1161 / 581!important;box-sizing:border-box!important;grid-template-columns:minmax(0,436fr) minmax(0,509fr)!important;gap:6.2%!important;padding:6.2%!important;border:1px solid rgba(255,255,255,.18)!important;border-radius:26px!important;background:rgba(18,21,25,.58)!important;box-shadow:0 22px 70px rgba(0,0,0,.24)!important;backdrop-filter:blur(30px) saturate(1.08)!important;-webkit-backdrop-filter:blur(30px) saturate(1.08)!important}
+.player::before,.player::after{content:none!important;display:none!important}
+.cover{position:relative!important;z-index:1!important;width:100%!important;height:auto!important;aspect-ratio:1!important;max-height:none!important;align-self:center!important;border-radius:10px!important;object-fit:cover!important}
+.details{position:relative!important;z-index:1!important;height:100%!important;max-height:100%!important;min-height:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}
+.details h1,.artist{flex:0 0 auto!important}
+.lyrics,.lyrics[hidden]{flex:1 1 auto!important;min-height:0!important;height:auto!important;max-height:none!important;overflow:hidden!important;margin:clamp(8px,1.5vh,18px) 0!important}
+.lyrics[hidden]{visibility:hidden!important}
+.queue-card{position:absolute!important;right:18px!important;bottom:16px!important;z-index:4!important;width:min(265px,34%)!important;min-height:0!important;padding:7px 9px!important;margin:0!important;display:flex!important;align-items:center!important;gap:9px!important;border:0!important;outline:0!important;border-radius:12px!important;background:rgba(7,9,12,.82)!important;box-shadow:none!important;backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important}
+.queue-cover{width:40px!important;height:40px!important;border-radius:7px!important}
+.queue-label{font-size:.54rem!important;letter-spacing:.14em!important;margin-bottom:1px!important}
+.queue-title{font-size:.76rem!important;line-height:1.2!important}
+.queue-artist{font-size:.65rem!important;margin-top:2px!important}
+@media(max-width:760px){.display-wrap{height:auto!important;min-height:100svh!important;padding:88px 14px 24px!important;place-items:start center!important}.player,.projector .player{width:min(100%,520px)!important;height:auto!important;aspect-ratio:auto!important;grid-template-columns:minmax(0,1fr)!important;gap:20px!important;padding:22px!important;overflow:visible!important}.cover{width:min(54vw,220px)!important;margin:0 auto!important}.details{height:auto!important;max-height:none!important;overflow:visible!important}.lyrics,.lyrics[hidden]{height:120px!important;min-height:120px!important;max-height:120px!important;flex:none!important}.queue-card{position:relative!important;right:auto!important;bottom:auto!important;width:100%!important;max-width:none!important;margin:14px 0 0!important}}
+@media(max-height:650px) and (min-width:761px){.display-wrap{padding:62px 24px 16px!important}.player,.projector .player{width:min(920px,calc(100vw - 64px),calc((100svh - 90px) * 1.92))!important}}
