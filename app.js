@@ -1,6 +1,7 @@
 // Spotify Authorization Code + PKCE. No client secret is used in this browser app.
 const CLIENT_KEY = "spotify_nowplaying_client_id";
-const REDIRECT_URI = `${location.origin}/`;
+const BASE_PATH = location.pathname.startsWith("/spotify-nowplaying-netlify/") ? "/spotify-nowplaying-netlify/" : "/";
+const REDIRECT_URI = `${location.origin}${BASE_PATH}`;
 const SCOPES = ["user-read-currently-playing", "user-read-playback-state", "user-modify-playback-state"];
 
 const clientInput = document.querySelector("#clientId");
@@ -27,7 +28,7 @@ async function authorize(mode) {
     return;
   }
   if (!/^https:\/\//i.test(location.origin) && location.hostname !== "localhost") {
-    statusEl.textContent = "Use your HTTPS Netlify URL.";
+    statusEl.textContent = "Use the HTTPS URL for this site.";
     return;
   }
   localStorage.setItem(CLIENT_KEY, clientId);
@@ -60,7 +61,7 @@ async function handleCallback() {
   const error = params.get("error");
   if (error) {
     statusEl.textContent = `Spotify authorization failed: ${error}. Check your Spotify Redirect URI settings.`;
-    history.replaceState({}, "", "/");
+    history.replaceState({}, "", BASE_PATH);
     return;
   }
   if (!code) return;
@@ -68,7 +69,7 @@ async function handleCallback() {
   const verifier = sessionStorage.getItem("spotify_pkce_verifier");
   if (!clientId || !verifier) {
     statusEl.textContent = "Authorization session expired. Please choose a mode and try again.";
-    history.replaceState({}, "", "/");
+    history.replaceState({}, "", BASE_PATH);
     return;
   }
   statusEl.textContent = "Finishing Spotify authorization…";
@@ -90,12 +91,12 @@ async function handleCallback() {
     if (data.refresh_token) localStorage.setItem("spotify_refresh_token", data.refresh_token);
     localStorage.setItem("spotify_expires_at", String(Date.now() + data.expires_in * 1000));
     sessionStorage.removeItem("spotify_pkce_verifier");
-    history.replaceState({}, "", "/");
+    history.replaceState({}, "", BASE_PATH);
     const mode = localStorage.getItem("spotify_nowplaying_mode") === "projector" ? "p.html" : "app.html";
-    location.replace(`/${mode}`);
+    location.replace(`${BASE_PATH}${mode}`);
   } catch (err) {
     statusEl.textContent = `Could not finish login: ${err.message}. Confirm the exact Redirect URI in Spotify Developer Dashboard.`;
-    history.replaceState({}, "", "/");
+    history.replaceState({}, "", BASE_PATH);
   }
 }
 handleCallback();
