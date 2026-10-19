@@ -21,10 +21,15 @@ function updateClock() { $("clock").textContent = new Intl.DateTimeFormat(undefi
 updateClock(); setInterval(updateClock,1000);
 let currentItem=null, commandBusy=false, lastQueueLookup=0, queueKey="";
 const icons = {
-  play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5z" fill="currentColor"/></svg>',
-  pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 5h3.8v14H7.5zM15 5h3.8v14H15z" fill="currentColor"/></svg>',
-  next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5v13L14 12 4 5.5zm10 0v13l7-6.5-7-6.5z" fill="currentColor"/></svg>'
+  play: '<svg viewBox="0 0 75 75" aria-hidden="true" focusable="false"><circle cx="37.26" cy="37.26" r="37.26" fill="var(--accent)"/><path d="M29 22.5c0-1.8 2.1-2.8 3.6-1.7l20 15c1.2.9 1.2 2.7 0 3.6l-20 15c-1.5 1.1-3.6.1-3.6-1.7V22.5Z" fill="#fff"/></svg>',
+  pause: '<svg viewBox="0 0 75 75" aria-hidden="true" focusable="false"><circle cx="37.26" cy="37.26" r="37.26" fill="var(--accent)"/><path d="M32 22C33.6569 22 35 23.3431 35 25V49C35 50.6569 33.6569 52 32 52H29C27.3431 52 26 50.6569 26 49V25C26 23.3431 27.3431 22 29 22H32ZM46 22C47.6569 22 49 23.3431 49 25V49C49 50.6569 47.6569 52 46 52H43C41.3431 52 40 50.6569 40 49V25C40 23.3431 41.3431 22 43 22H46Z" fill="#fff"/></svg>',
+  next: '<svg viewBox="0 0 75 75" aria-hidden="true" focusable="false"><circle cx="37.26" cy="37.26" r="37.26" fill="#fff"/><path d="M23 23.9609C23 22.2748 24.9584 21.345 26.2646 22.4111L42.8516 35.9502C43.832 36.7505 43.832 38.2495 42.8516 39.0498L26.2646 52.5889C24.9584 53.655 23 52.7252 23 51.0391V23.9609ZM49.75 21C51.4069 21 52.75 22.3431 52.75 24V50C52.75 51.6569 51.4069 53 49.75 53H48.75C47.0931 53 45.75 51.6569 45.75 50V24C45.75 22.3431 47.0931 21 48.75 21H49.75Z" fill="var(--accent)"/></svg>'
 };
+function renderButtonIcons(){
+  $("playPauseIcon").innerHTML=paused?icons.play:icons.pause;
+  $("nextIcon").innerHTML=icons.next;
+}
+renderButtonIcons();
 function updateControls(){
   $("playPauseBtn").disabled=commandBusy||!currentItem;
   $("nextBtn").disabled=commandBusy||!currentItem;
@@ -34,21 +39,37 @@ function updateControls(){
 $("playPauseBtn").addEventListener("click",async()=>{if(commandBusy||!currentItem)return;commandBusy=true;updateControls();try{await api(`https://api.spotify.com/v1/me/player/${paused?"play":"pause"}`,{method:"PUT"});await update();}catch(err){showMessage(`Playback control failed: ${err.message}`);}finally{commandBusy=false;updateControls();}});
 $("nextBtn").addEventListener("click",async()=>{if(commandBusy||!currentItem)return;commandBusy=true;updateControls();try{await api("https://api.spotify.com/v1/me/player/next",{method:"POST"});await new Promise(r=>setTimeout(r,500));lastQueueLookup=0;await update();}catch(err){showMessage(`Next track failed: ${err.message}`);}finally{commandBusy=false;updateControls();}});
 function setAccentFromImage(url){
-  const img=new Image(); img.crossOrigin="anonymous";
-  img.onload=()=>{try{
-    const canvas=document.createElement("canvas");canvas.width=canvas.height=32;
-    const ctx=canvas.getContext("2d",{willReadFrequently:true});ctx.drawImage(img,0,0,32,32);
-    const pixels=ctx.getImageData(0,0,32,32).data;let r=0,g=0,b=0,n=0;
-    for(let i=0;i<pixels.length;i+=16){const hi=Math.max(pixels[i],pixels[i+1],pixels[i+2]),lo=Math.min(pixels[i],pixels[i+1],pixels[i+2]);if(pixels[i+3]<150||hi-lo<20)continue;r+=pixels[i];g+=pixels[i+1];b+=pixels[i+2];n++;}
-    if(!n)return;r=Math.round(r/n);g=Math.round(g/n);b=Math.round(b/n);
-    // Keep the album's hue, but lighten it until white/dark UI surfaces have reliable contrast.
-    const luminance=([r,g,b])=>[r,g,b].map(v=>{v/=255;return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((a,v,i)=>a+v*[.2126,.7152,.0722][i],0);
-    let mix=0;while(luminance([r,g,b])<.48&&mix<.82){r=Math.round(r+(255-r)*.08);g=Math.round(g+(255-g)*.08);b=Math.round(b+(255-b)*.08);mix+=.08;}
-    document.documentElement.style.setProperty("--accent",`rgb(${r},${g},${b})`);
-    document.documentElement.style.setProperty("--accent-soft",`rgba(${r},${g},${b},.2)`);
-    document.documentElement.style.setProperty("--accent-glow",`rgba(${r},${g},${b},.32)`);
-  }catch(_){document.documentElement.style.setProperty("--accent","#b8e0d2");}};
-  img.onerror=()=>document.documentElement.style.setProperty("--accent","#b8e0d2");img.src=url;
+  const fallback=()=>{const root=document.documentElement;root.style.setProperty("--accent","#BC1864");root.style.setProperty("--accent-soft","rgba(188,24,100,.20)");root.style.setProperty("--accent-glow","rgba(188,24,100,.30)");};
+  const img=new Image();img.crossOrigin="anonymous";
+  img.onload=()=>{
+    try{
+      const canvas=document.createElement("canvas");canvas.width=canvas.height=36;
+      const ctx=canvas.getContext("2d",{willReadFrequently:true});ctx.drawImage(img,0,0,36,36);
+      const data=ctx.getImageData(0,0,36,36).data,bins=new Map();
+      for(let i=0;i<data.length;i+=4){
+        const r=data[i],g=data[i+1],b=data[i+2],a=data[i+3];
+        if(a<180)continue;
+        const hi=Math.max(r,g,b),lo=Math.min(r,g,b),sat=hi?((hi-lo)/hi):0;
+        if(hi<42||hi>248||sat<.22)continue;
+        const key=[r>>4,g>>4,b>>4].join(",");
+        const item=bins.get(key)||{r:0,g:0,b:0,n:0,score:0};
+        item.r+=r;item.g+=g;item.b+=b;item.n++;item.score+=sat*(1-Math.abs(145-hi)/220);bins.set(key,item);
+      }
+      const candidates=[...bins.values()].sort((a,b)=>(b.score/b.n)-(a.score/a.n));let r,g,b;
+      if(candidates.length){
+        const best=candidates.slice(0,Math.min(5,candidates.length)),total=best.reduce((s,x)=>s+x.n,0);
+        r=Math.round(best.reduce((s,x)=>s+x.r,0)/total);g=Math.round(best.reduce((s,x)=>s+x.g,0)/total);b=Math.round(best.reduce((s,x)=>s+x.b,0)/total);
+      }else{let rr=0,gg=0,bb=0,n=0;for(let i=0;i<data.length;i+=16){rr+=data[i];gg+=data[i+1];bb+=data[i+2];n++;}r=Math.round(rr/n);g=Math.round(gg/n);b=Math.round(bb/n);}
+      if(Math.max(r,g,b)-Math.min(r,g,b)<34){r=188;g=24;b=100;}
+      const lift=Math.max(r,g,b)<150?.18:Math.max(r,g,b)<185?.10:.02;
+      r=Math.round(r+(255-r)*lift);g=Math.round(g+(255-g)*lift);b=Math.round(b+(255-b)*lift);
+      const root=document.documentElement;
+      root.style.setProperty("--accent",`rgb(${r}, ${g}, ${b})`);
+      root.style.setProperty("--accent-soft",`rgba(${r}, ${g}, ${b}, .18)`);
+      root.style.setProperty("--accent-glow",`rgba(${r}, ${g}, ${b}, .28)`);
+    }catch(_){fallback();}
+  };
+  img.onerror=fallback;img.src=url;
 }
 async function updateArtistBackground(item){
   const artist=item.artists?.[0];const backdrop=$("artistBackdrop");
