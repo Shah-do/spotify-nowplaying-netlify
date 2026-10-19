@@ -1,0 +1,9 @@
+{
+  "$schema": "https://schema.workers.dev/wrangler.json",
+  "name": "spotify-nowplaying-netlify",
+  "compatibility_date": "2026-10-19",
+  "assets": {
+    "directory": ".",
+    "not_found_handling": "404-page"
+  }
+}
