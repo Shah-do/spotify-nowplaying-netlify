@@ -45,18 +45,13 @@ async function refreshAccessToken() {
   localStorage.setItem("spotify_expires_at", String(expiresAt));
   if (data.refresh_token) localStorage.setItem("spotify_refresh_token", data.refresh_token);
 }
-async function api(url) {
+async function api(url, options = {}) {
   if (!accessToken || Date.now() > expiresAt - 60000) await refreshAccessToken();
-  let response = await fetch(url, {headers: {Authorization: `Bearer ${accessToken}`}});
-  if (response.status === 401) {
-    await refreshAccessToken();
-    response = await fetch(url, {headers: {Authorization: `Bearer ${accessToken}`}});
-  }
+  const request = () => fetch(url, {...options, headers: {Authorization: `Bearer ${accessToken}`, ...(options.body ? {"Content-Type":"application/json"} : {}), ...(options.headers || {})}});
+  let response = await request();
+  if (response.status === 401) { await refreshAccessToken(); response = await request(); }
   if (response.status === 204) return null;
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    throw new Error(body.error?.message || `Spotify API returned ${response.status}`);
-  }
+  if (!response.ok) { const body = await response.json().catch(() => ({})); throw new Error(body.error?.message || `Spotify API returned ${response.status}`); }
   return response.json();
 }
 async function lookupLyrics(item) {
