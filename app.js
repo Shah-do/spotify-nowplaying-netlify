@@ -1,7 +1,7 @@
 // Spotify Authorization Code + PKCE. No client secret is used in this browser app.
 const CLIENT_KEY = "spotify_nowplaying_client_id";
 const REDIRECT_URI = `${location.origin}/`;
-const SCOPES = ["user-read-currently-playing", "user-read-playback-state"];
+const SCOPES = ["user-read-currently-playing", "user-read-playback-state", "user-modify-playback-state"];
 
 const clientInput = document.querySelector("#clientId");
 const statusEl = document.querySelector("#status");
