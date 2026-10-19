@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#10110f"><title>NowPlaying — Spotify</title>
+<meta name="theme-color" content="#080a0d"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="pwa-icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="pwa-icon.svg"><title>NowPlaying — Spotify</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="launcher">
@@ -22,5 +22,5 @@
   <p class="footer">Uses Spotify playback metadata and LRCLIB synced lyrics where available.</p>
 </main>
 <script src="app.js"></script>
-</body>
+<script>if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(console.error)); }</script></body>
 </html>
