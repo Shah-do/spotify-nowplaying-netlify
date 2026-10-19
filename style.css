@@ -260,3 +260,44 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
  .display-wrap{padding-top:92px!important;padding-bottom:28px!important}
  .player,.projector .player{height:min(581px,calc(100svh - 120px))!important}
 }
+
+/* Composition refinement: scale the whole panel uniformly and keep it centered */
+.display-wrap{
+ min-height:100svh!important;box-sizing:border-box!important;
+ padding:0 40px!important;display:grid!important;place-items:center!important;
+}
+.topbar{top:clamp(24px,4vh,42px)!important;left:clamp(28px,4.2vw,72px)!important;right:clamp(28px,4.2vw,72px)!important}
+.player,.projector .player{
+ width:min(1100px,calc(100vw - 80px))!important;
+ max-width:1100px!important;height:auto!important;min-height:0!important;
+ aspect-ratio:1161 / 581!important;
+ box-sizing:border-box!important;
+ grid-template-columns:minmax(0,436fr) minmax(0,509fr)!important;
+ gap:6.2%!important;padding:6.2%!important;
+ border-radius:28px!important;position:relative!important;overflow:hidden!important;
+}
+.cover{width:100%!important;height:auto!important;aspect-ratio:1!important;max-height:none!important;align-self:center!important;border-radius:12px!important}
+.details{height:100%!important;max-height:100%!important;min-height:0!important;overflow:hidden!important}
+.queue-card{
+ position:absolute!important;right:20px!important;bottom:18px!important;z-index:5!important;
+ width:min(285px,36%)!important;min-height:0!important;padding:8px 10px!important;
+ display:flex!important;align-items:center!important;gap:10px!important;
+ border:0!important;outline:0!important;border-radius:14px!important;
+ background:rgba(8,10,13,.74)!important;box-shadow:none!important;
+ backdrop-filter:blur(16px)!important;-webkit-backdrop-filter:blur(16px)!important;
+}
+.queue-cover{width:44px!important;height:44px!important;border-radius:8px!important}
+.queue-label{font-size:.56rem!important;letter-spacing:.15em!important;margin-bottom:2px!important}
+.queue-title{font-size:.8rem!important}
+.queue-artist{font-size:.68rem!important}
+@media(max-width:760px){
+ .display-wrap{padding:88px 14px 24px!important;place-items:start center!important}
+ .player,.projector .player{width:min(100%,520px)!important;aspect-ratio:auto!important;height:auto!important;grid-template-columns:minmax(0,1fr)!important;gap:20px!important;padding:24px!important;overflow:visible!important}
+ .cover{width:min(54vw,220px)!important;margin:0 auto!important}
+ .details{height:auto!important;max-height:none!important;overflow:visible!important}
+ .queue-card{position:relative!important;right:auto!important;bottom:auto!important;width:100%!important;max-width:none!important;margin:14px 0 0!important}
+}
+@media(max-height:720px) and (min-width:761px){
+ .display-wrap{padding:90px 24px 20px!important}
+ .player,.projector .player{width:min(1030px,calc((100svh - 120px) * 1.92),calc(100vw - 80px))!important}
+}
