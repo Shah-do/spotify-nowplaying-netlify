@@ -134,25 +134,43 @@ async function lookupLyrics(item) {
   lastLyricsLookup = key;
   lyrics = [];
   $("lyrics").hidden = true;
-  const artists = item.artists.map(a => a.name).join(", ");
-  const url = `https://lrclib.net/api/get?${new URLSearchParams({
-    track_name: item.name, artist_name: artists, album_name: item.album.name,
-    duration: String(Math.round(item.duration_ms / 1000))
-  })}`;
+
+  const artists = (item.artists || []).map(a => a.name).join(", ");
+  const duration = Math.round((item.duration_ms || 0) / 1000);
+  const parseSynced = text => (text || "").split(/\r?\n/).map(line => {
+    const match = line.match(/\[(\d{2}):(\d{2})(?:\.(\d{1,3}))?\](.*)/);
+    if (!match) return null;
+    const frac = Number(`0.${match[3] || "0"}`);
+    return {time:Number(match[1]) * 60 + Number(match[2]) + frac, text:match[4].trim()};
+  }).filter(line => line && line.text).sort((a,b)=>a.time-b.time);
+
   try {
-    const res = await fetch(url);
-    if (!res.ok) return;
-    const data = await res.json();
-    if (data.syncedLyrics) {
-      lyrics = data.syncedLyrics.split(/\r?\n/).map(line => {
-        const match = line.match(/\[(\d{2}):(\d{2})(?:\.(\d{1,3}))?\](.*)/);
-        if (!match) return null;
-        const frac = Number(`0.${match[3] || "0"}`);
-        return {time: Number(match[1]) * 60 + Number(match[2]) + frac, text: match[4].trim()};
-      }).filter(Boolean);
-      $("lyrics").hidden = !lyrics.length;
+    // First try LRCLIB's exact match. Exact lookup can miss alternate album
+    // editions, so fall back to search and choose the closest-duration synced result.
+    const exactUrl = `https://lrclib.net/api/get?${new URLSearchParams({
+      track_name:item.name, artist_name:artists, album_name:item.album?.name || "", duration:String(duration)
+    })}`;
+    let data = null;
+    const exact = await fetch(exactUrl);
+    if (exact.ok) data = await exact.json();
+    if (!data?.syncedLyrics) {
+      const searchUrl = `https://lrclib.net/api/search?${new URLSearchParams({track_name:item.name, artist_name:artists})}`;
+      const search = await fetch(searchUrl);
+      if (search.ok) {
+        const results = await search.json();
+        const candidates = (Array.isArray(results) ? results : []).filter(x => x.syncedLyrics);
+        candidates.sort((a,b) => Math.abs((a.duration || duration)-duration)-Math.abs((b.duration || duration)-duration));
+        data = candidates[0] || null;
+      }
     }
-  } catch (_) { /* Lyrics are optional. */ }
+    if (data?.syncedLyrics) {
+      lyrics = parseSynced(data.syncedLyrics);
+      $("lyrics").hidden = !lyrics.length;
+      renderLyrics();
+    }
+  } catch (_) {
+    // Lyrics are optional; playback must continue even if the lyric provider fails.
+  }
 }
 function renderLyrics() {
   if (!lyrics.length) return;
