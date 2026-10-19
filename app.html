@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#10110f"><title>NowPlaying — Desktop</title><link rel="stylesheet" href="style.css"></head>
+<meta name="theme-color" content="#080a0d"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="pwa-icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="pwa-icon.svg"><title>NowPlaying — Desktop</title><link rel="stylesheet" href="style.css"></head>
 <body class="display desktop">
 <div class="artist-backdrop" id="artistBackdrop" aria-hidden="true"></div>
 <header class="topbar"><span class="clock" id="clock">--:--</span><button class="back" id="backBtn" aria-label="Back to setup">← Setup</button></header>
@@ -21,4 +21,4 @@
     </div>
     <aside class="queue-card empty" id="queueCard"><img id="queueCover" class="queue-cover" src="placeholder.svg" alt=""><div class="queue-copy"><div class="queue-label">Up next</div><div id="queueTitle" class="queue-title">Checking queue…</div><div id="queueArtist" class="queue-artist">Spotify queue</div></div></aside>
   </section>
-</main><script src="display.js"></script></body></html>
+</main><script src="display.js"></script><script>if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(console.error)); }</script></body></html>
