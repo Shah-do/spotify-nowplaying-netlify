@@ -3,8 +3,9 @@
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#10110f"><title>NowPlaying — Projector</title><link rel="stylesheet" href="style.css"></head>
 <body class="display projector">
+<div class="artist-backdrop" id="artistBackdrop" aria-hidden="true"></div>
+<header class="topbar"><span class="clock" id="clock">--:--</span><button class="back" id="backBtn" aria-label="Back to setup">← Setup</button></header>
 <main class="display-wrap">
-  <button class="back" id="backBtn" aria-label="Back to setup">← Setup</button>
   <section class="player">
     <img id="cover" class="cover" alt="Album artwork" src="placeholder.svg">
     <div class="details">
@@ -16,7 +17,8 @@
       </div>
       <div class="progress"><div id="bar"></div></div>
       <div class="times"><span id="elapsed">0:00</span><span id="duration">0:00</span></div>
+      <div class="controls"><button id="playPauseBtn" class="control primary" aria-label="Pause" title="Play / pause"><span id="playPauseIcon">Ⅱ</span></button><button id="nextBtn" class="control" aria-label="Next track" title="Next track">▶▶</button><span class="control-label">Playback controls</span></div>
       <p id="message" class="message" role="status"></p>
     </div>
   </section>
-</main><script src="display.js"></script></body></html>
+</main><aside class="queue-card empty" id="queueCard"><img id="queueCover" class="queue-cover" src="placeholder.svg" alt=""><div class="queue-copy"><div class="queue-label">Up next</div><div id="queueTitle" class="queue-title">Checking queue…</div><div id="queueArtist" class="queue-artist">Spotify queue</div></div></aside><script src="display.js"></script></body></html>
