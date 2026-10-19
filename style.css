@@ -597,3 +597,11 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
     line-height: 1.25 !important;
   }
 }
+
+
+/* Correct grid declaration for the artwork/metadata split */
+@media (min-width:761px) {
+  .player, .projector .player {
+    grid-template-columns: minmax(0, .96fr) minmax(0, 1fr) !important;
+  }
+}
