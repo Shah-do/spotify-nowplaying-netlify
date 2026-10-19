@@ -23,8 +23,45 @@ let currentItem=null, commandBusy=false, lastQueueLookup=0, queueKey="";
 function updateControls(){ $("playPauseBtn").disabled=commandBusy||!currentItem; $("nextBtn").disabled=commandBusy||!currentItem; $("playPauseIcon").textContent=paused?"▶":"Ⅱ"; $("playPauseBtn").setAttribute("aria-label",paused?"Play":"Pause"); }
 $("playPauseBtn").addEventListener("click",async()=>{if(commandBusy||!currentItem)return;commandBusy=true;updateControls();try{await api(`https://api.spotify.com/v1/me/player/${paused?"play":"pause"}`,{method:"PUT"});await update();}catch(err){showMessage(`Playback control failed: ${err.message}`);}finally{commandBusy=false;updateControls();}});
 $("nextBtn").addEventListener("click",async()=>{if(commandBusy||!currentItem)return;commandBusy=true;updateControls();try{await api("https://api.spotify.com/v1/me/player/next",{method:"POST"});await new Promise(r=>setTimeout(r,500));lastQueueLookup=0;await update();}catch(err){showMessage(`Next track failed: ${err.message}`);}finally{commandBusy=false;updateControls();}});
-function setAccentFromImage(url){const img=new Image();img.crossOrigin="anonymous";img.onload=()=>{try{const c=document.createElement("canvas");c.width=c.height=32;const x=c.getContext("2d",{willReadFrequently:true});x.drawImage(img,0,0,32,32);const d=x.getImageData(0,0,32,32).data;let r=0,g=0,b=0,n=0;for(let i=0;i<d.length;i+=16){const hi=Math.max(d[i],d[i+1],d[i+2]),lo=Math.min(d[i],d[i+1],d[i+2]);if(d[i+3]<150||hi-lo<18)continue;r+=d[i];g+=d[i+1];b+=d[i+2];n++;}if(n){r=Math.round(r/n);g=Math.round(g/n);b=Math.round(b/n);document.documentElement.style.setProperty("--accent",`rgb(${r},${g},${b})`);document.documentElement.style.setProperty("--accent-soft",`rgba(${r},${g},${b},.22)`);document.documentElement.style.setProperty("--accent-glow",`rgba(${r},${g},${b},.4)`);}}catch(_){} };img.src=url;}
-async function updateArtistBackground(item){const artist=item.artists?.[0];if(!artist?.id)return;try{const data=await api(`https://api.spotify.com/v1/artists/${artist.id}`);const image=data.images?.[0]?.url;if(image){$("artistBackdrop").style.backgroundImage=`url("${image}")`;$("artistBackdrop").classList.add("visible");}else $("artistBackdrop").classList.remove("visible");}catch(_){$("artistBackdrop").classList.remove("visible");}}
+function setAccentFromImage(url){
+  const img=new Image(); img.crossOrigin="anonymous";
+  img.onload=()=>{try{
+    const canvas=document.createElement("canvas");canvas.width=canvas.height=32;
+    const ctx=canvas.getContext("2d",{willReadFrequently:true});ctx.drawImage(img,0,0,32,32);
+    const pixels=ctx.getImageData(0,0,32,32).data;let r=0,g=0,b=0,n=0;
+    for(let i=0;i<pixels.length;i+=16){const hi=Math.max(pixels[i],pixels[i+1],pixels[i+2]),lo=Math.min(pixels[i],pixels[i+1],pixels[i+2]);if(pixels[i+3]<150||hi-lo<20)continue;r+=pixels[i];g+=pixels[i+1];b+=pixels[i+2];n++;}
+    if(!n)return;r=Math.round(r/n);g=Math.round(g/n);b=Math.round(b/n);
+    // Keep the album's hue, but lighten it until white/dark UI surfaces have reliable contrast.
+    const luminance=([r,g,b])=>[r,g,b].map(v=>{v/=255;return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((a,v,i)=>a+v*[.2126,.7152,.0722][i],0);
+    let mix=0;while(luminance([r,g,b])<.48&&mix<.82){r=Math.round(r+(255-r)*.08);g=Math.round(g+(255-g)*.08);b=Math.round(b+(255-b)*.08);mix+=.08;}
+    document.documentElement.style.setProperty("--accent",`rgb(${r},${g},${b})`);
+    document.documentElement.style.setProperty("--accent-soft",`rgba(${r},${g},${b},.2)`);
+    document.documentElement.style.setProperty("--accent-glow",`rgba(${r},${g},${b},.32)`);
+  }catch(_){document.documentElement.style.setProperty("--accent","#b8e0d2");}};
+  img.onerror=()=>document.documentElement.style.setProperty("--accent","#b8e0d2");img.src=url;
+}
+async function updateArtistBackground(item){
+  const artist=item.artists?.[0];const backdrop=$("artistBackdrop");
+  backdrop.classList.remove("visible");backdrop.style.backgroundImage="none";
+  if(!artist?.name)return;
+  // Prefer the artist profile image from Spotify, never the album cover.
+  try{
+    if(artist.id){
+      const data=await api(`https://api.spotify.com/v1/artists/${artist.id}`);
+      const image=data.images?.[0]?.url;
+      if(image){backdrop.style.backgroundImage=`url("${image}")`;backdrop.classList.add("visible");return;}
+    }
+  }catch(_){}
+  // If Spotify doesn't expose artist images for this app, try a public Commons portrait.
+  try{
+    const q=encodeURIComponent(`"${artist.name}" musician portrait`);
+    const url=`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${q}&gsrnamespace=6&gsrlimit=12&prop=imageinfo&iiprop=url&iiurlwidth=1800&format=json&origin=*`;
+    const response=await fetch(url);if(!response.ok)return;
+    const data=await response.json();const pages=Object.values(data.query?.pages||{});
+    const candidate=pages.find(p=>p.title&&/\.(jpe?g|png|webp)$/i.test(p.title)&&p.imageinfo?.[0]?.thumburl);
+    if(candidate){backdrop.style.backgroundImage=`url("${candidate.imageinfo[0].thumburl}")`;backdrop.classList.add("visible");}
+  }catch(_){}
+}
 async function updateQueue(force=false){if(!force&&Date.now()-lastQueueLookup<12000)return;lastQueueLookup=Date.now();try{const data=await api("https://api.spotify.com/v1/me/player/queue");const next=data?.queue?.[0];if(!next){$("queueTitle").textContent="Nothing queued";$("queueArtist").textContent="Add something to the queue";$("queueCover").src="placeholder.svg";$("queueCard").classList.add("empty");queueKey="";return;}const key=next.id||next.uri;if(key!==queueKey){queueKey=key;$("queueTitle").textContent=next.name;$("queueArtist").textContent=next.artists?.map(a=>a.name).join(", ")||"";$("queueCover").src=next.album?.images?.[0]?.url||"placeholder.svg";}$("queueCard").classList.remove("empty");}catch(_){$("queueTitle").textContent="Queue unavailable";$("queueArtist").textContent="Check Spotify playback";}}
 
 
