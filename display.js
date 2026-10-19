@@ -157,11 +157,13 @@ async function lookupLyrics(item) {
 function renderLyrics() {
   if (!lyrics.length) return;
   const seconds = (progressMs + (paused ? 0 : Date.now() - startedAt)) / 1000;
-  let i = lyrics.findIndex(line => line.time > seconds);
-  if (i < 0) i = lyrics.length;
-  $("prevLyric").textContent = i > 0 ? lyrics[i - 1].text : "";
-  $("currentLyric").textContent = i < lyrics.length ? lyrics[i].text : "";
-  $("nextLyric").textContent = i + 1 < lyrics.length ? lyrics[i + 1].text : "";
+  // Synced lyric timestamps mark the START of a line. The active line is
+  // therefore the latest timestamp <= playback time, not the next future line.
+  const nextIndex = lyrics.findIndex(line => line.time > seconds);
+  const currentIndex = nextIndex === -1 ? lyrics.length - 1 : nextIndex - 1;
+  $("prevLyric").textContent = currentIndex > 0 ? lyrics[currentIndex - 1].text : "";
+  $("currentLyric").textContent = currentIndex >= 0 ? lyrics[currentIndex].text : "";
+  $("nextLyric").textContent = nextIndex >= 0 && nextIndex < lyrics.length ? lyrics[nextIndex].text : "";
 }
 async function update() {
   try {
@@ -174,6 +176,12 @@ async function update() {
     }
     const item = data.item;
     currentItem=item;
+    // Spotify's progress_ms is a snapshot from the API response. Start the
+    // local clock immediately, before any slow lyrics/artist-image requests.
+    progressMs = data.progress_ms || 0;
+    durationMs = item.duration_ms || 0;
+    paused = !data.is_playing;
+    startedAt = Date.now();
     const key = item.id || `${item.name}-${item.artists[0]?.name}`;
     if (key !== trackKey) {
       trackKey = key;
@@ -184,10 +192,6 @@ async function update() {
       await Promise.all([lookupLyrics(item),updateArtistBackground(item)]);
       lastQueueLookup=0;
     }
-    progressMs = data.progress_ms || 0;
-    durationMs = item.duration_ms || 0;
-    paused = !data.is_playing;
-    startedAt = Date.now();
     $("state") && ($("state").textContent = paused ? "PAUSED" : "NOW PLAYING");
     showMessage("");
     const estimated = Math.min(durationMs, progressMs + (paused ? 0 : Date.now() - startedAt));
