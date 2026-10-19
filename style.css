@@ -324,3 +324,11 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
 .queue-artist{font-size:.65rem!important;margin-top:2px!important}
 @media(max-width:760px){.display-wrap{height:auto!important;min-height:100svh!important;padding:88px 14px 24px!important;place-items:start center!important}.player,.projector .player{width:min(100%,520px)!important;height:auto!important;aspect-ratio:auto!important;grid-template-columns:minmax(0,1fr)!important;gap:20px!important;padding:22px!important;overflow:visible!important}.cover{width:min(54vw,220px)!important;margin:0 auto!important}.details{height:auto!important;max-height:none!important;overflow:visible!important}.lyrics,.lyrics[hidden]{height:120px!important;min-height:120px!important;max-height:120px!important;flex:none!important}.queue-card{position:relative!important;right:auto!important;bottom:auto!important;width:100%!important;max-width:none!important;margin:14px 0 0!important}}
 @media(max-height:650px) and (min-width:761px){.display-wrap{padding:62px 24px 16px!important}.player,.projector .player{width:min(920px,calc(100vw - 64px),calc((100svh - 90px) * 1.92))!important}}
+
+/* Custom SVG playback controls: album-adaptive magenta-style design */
+.control.primary{padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;width:58px!important;height:58px!important}
+#nextBtn.control{padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;width:48px!important;height:48px!important}
+.control .icon-wrap{display:block!important;width:100%!important;height:100%!important;line-height:0!important}
+.control .icon-wrap svg{display:block!important;width:100%!important;height:100%!important}
+.control.primary:hover:not(:disabled){filter:brightness(1.07)!important;box-shadow:none!important}
+#nextBtn:hover:not(:disabled){filter:brightness(1.06)!important}
