@@ -1,5 +1,6 @@
 const CLIENT_KEY = "spotify_nowplaying_client_id";
 const REDIRECT_URI = `${location.origin}/`;
+const BASE_PATH = location.pathname.startsWith("/spotify-nowplaying-netlify/") ? "/spotify-nowplaying-netlify/" : "/";
 const $ = id => document.getElementById(id);
 let accessToken = localStorage.getItem("spotify_access_token");
 let expiresAt = Number(localStorage.getItem("spotify_expires_at") || 0);
@@ -16,7 +17,7 @@ function formatTime(ms) {
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
 }
 function showMessage(text) { $("message").textContent = text || ""; }
-$("backBtn").addEventListener("click", () => location.href = "/");
+$("backBtn").addEventListener("click", () => location.href = BASE_PATH);
 function updateClock() { $("clock").textContent = new Intl.DateTimeFormat(undefined,{hour:"2-digit",minute:"2-digit"}).format(new Date()); }
 updateClock(); setInterval(updateClock,1000);
 let currentItem=null, commandBusy=false, lastQueueLookup=0, queueKey="";
