@@ -475,3 +475,49 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
  .control.primary{width:56px!important;height:56px!important}
  #nextBtn.control{width:48px!important;height:48px!important}
 }
+
+
+/* Stable player geometry: artwork defines row height; controls sit on its bottom edge */
+@media(min-width:761px){
+ .player,.projector .player{
+   padding:3.2%!important;
+   gap:5.2%!important;
+   grid-template-columns:minmax(0,.9fr) minmax(0,1fr)!important;
+   grid-template-rows:minmax(0,1fr)!important;
+   align-items:stretch!important;
+   overflow:hidden!important;
+ }
+ .cover{
+   width:100%!important;
+   height:auto!important;
+   aspect-ratio:1!important;
+   align-self:center!important;
+   justify-self:stretch!important;
+   margin:0!important;
+ }
+ .details{
+   display:flex!important;
+   flex-direction:column!important;
+   align-self:stretch!important;
+   justify-content:flex-start!important;
+   height:100%!important;
+   max-height:100%!important;
+   min-height:0!important;
+   overflow:hidden!important;
+ }
+ .details h1{flex:0 0 auto!important}
+ .artist{flex:0 0 auto!important}
+ .lyrics,.lyrics:not([hidden]){
+   flex:1 1 auto!important;
+   min-height:72px!important;
+   height:auto!important;
+   max-height:none!important;
+   margin:clamp(8px,1.2vh,14px) 0!important;
+   overflow:hidden!important;
+ }
+ .lyrics[hidden]{display:none!important}
+ .progress{flex:0 0 6px!important;margin-top:auto!important}
+ .times{flex:0 0 auto!important}
+ .controls{flex:0 0 auto!important;margin-top:12px!important;align-self:flex-start!important}
+ .message{flex:0 0 auto!important;min-height:0!important;margin:2px 0 0!important}
+}
