@@ -144,10 +144,10 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
 .player::before{
   content:"";position:absolute;inset:-22px;z-index:-2;
   background-image:var(--artist-image,none);background-size:cover;background-position:center 32%;
-  filter:blur(26px) saturate(.82);transform:scale(1.08);opacity:.52;pointer-events:none;
+  filter:blur(26px) saturate(.82);transform:scale(1.08);opacity:.52;pointer-events:none;z-index:0;
 }
 .player::after{
-  content:"";position:absolute;inset:0;z-index:-1;
+  content:"";position:absolute;inset:0;z-index:0;
   background:linear-gradient(90deg,rgba(8,12,16,.7),rgba(8,12,16,.56));
   pointer-events:none;
 }
