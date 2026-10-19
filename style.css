@@ -332,3 +332,73 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
 .control .icon-wrap svg{display:block!important;width:100%!important;height:100%!important}
 .control.primary:hover:not(:disabled){filter:brightness(1.07)!important;box-shadow:none!important}
 #nextBtn:hover:not(:disabled){filter:brightness(1.06)!important}
+
+
+/* Fix lyric clipping and make album-art spacing symmetrical */
+.player,.projector .player{
+  width:min(1000px,calc(100vw - 64px),calc((100svh - 72px) * 1.92))!important;
+  aspect-ratio:1161 / 581!important;
+  padding:6.2%!important;
+  gap:6.2%!important;
+  align-items:stretch!important;
+}
+.cover{
+  align-self:start!important;
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:1!important;
+  margin:0!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.22)!important;
+}
+.details{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.details h1{line-height:1.08!important;margin:0!important}
+.artist{line-height:1.25!important;margin:12px 0 0!important;flex:0 0 auto!important}
+.lyrics,.lyrics[hidden]{
+  display:grid!important;
+  grid-template-rows:minmax(0,1fr) auto minmax(0,1fr)!important;
+  align-content:center!important;
+  align-items:center!important;
+  gap:3px!important;
+  flex:1 1 auto!important;
+  width:100%!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+  margin:clamp(10px,1.7vh,18px) 0!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+.lyrics[hidden]{display:none!important}
+.lyric{
+  min-width:0!important;
+  width:100%!important;
+  margin:0!important;
+  line-height:1.22!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;
+}
+.lyric.dim{font-size:clamp(.9rem,1.35vw,1.2rem)!important;line-height:1.25!important}
+.lyric.current{font-size:clamp(1.1rem,1.8vw,1.55rem)!important;line-height:1.2!important}
+.progress{flex:0 0 6px!important}
+.times{flex:0 0 auto!important;margin-top:8px!important}
+.controls{flex:0 0 auto!important;margin-top:18px!important}
+.message{flex:0 0 auto!important;min-height:0!important;margin:4px 0 0!important}
+@media(max-width:760px){
+ .player,.projector .player{width:min(100%,520px)!important;aspect-ratio:auto!important;padding:22px!important;gap:20px!important;align-items:stretch!important}
+ .cover{width:min(54vw,220px)!important;align-self:center!important}
+ .details{height:auto!important;max-height:none!important;overflow:visible!important}
+ .lyrics,.lyrics[hidden]{height:112px!important;min-height:112px!important;max-height:112px!important;flex:none!important}
+}
+@media(max-height:700px) and (min-width:761px){
+ .player,.projector .player{width:min(920px,calc(100vw - 64px),calc((100svh - 60px) * 1.92))!important}
+}
