@@ -402,3 +402,30 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
 @media(max-height:700px) and (min-width:761px){
  .player,.projector .player{width:min(920px,calc(100vw - 64px),calc((100svh - 60px) * 1.92))!important}
 }
+
+
+/* Equal artwork inset: same physical inset on every side of the cover */
+@media(min-width:761px){
+ .player,.projector .player{
+   padding:clamp(32px,9.2vw,116px)!important;
+   grid-template-columns:minmax(0,.75fr) minmax(0,1fr)!important;
+   grid-template-rows:minmax(0,1fr)!important;
+   gap:6.2%!important;
+   align-items:stretch!important;
+ }
+ .cover{
+   align-self:center!important;
+   justify-self:start!important;
+   width:auto!important;
+   height:100%!important;
+   max-width:100%!important;
+   aspect-ratio:1!important;
+   object-fit:cover!important;
+   margin:0!important;
+ }
+ .details{min-height:0!important;height:100%!important;overflow:hidden!important}
+}
+@media(max-width:760px){
+ .player,.projector .player{padding:22px!important}
+ .cover{width:min(54vw,220px)!important;height:auto!important;aspect-ratio:1!important;margin:0 auto!important}
+}
