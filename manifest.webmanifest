@@ -1,0 +1,22 @@
+{
+  "id": "./p.html",
+  "name": "NowPlaying — Spotify Display",
+  "short_name": "NowPlaying",
+  "description": "A full-screen Spotify Now Playing display with synced lyrics and album art.",
+  "lang": "en",
+  "start_url": "./p.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "background_color": "#080a0d",
+  "theme_color": "#080a0d",
+  "icons": [
+    {
+      "src": "./pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
