@@ -20,7 +20,17 @@ $("backBtn").addEventListener("click", () => location.href = "/");
 function updateClock() { $("clock").textContent = new Intl.DateTimeFormat(undefined,{hour:"2-digit",minute:"2-digit"}).format(new Date()); }
 updateClock(); setInterval(updateClock,1000);
 let currentItem=null, commandBusy=false, lastQueueLookup=0, queueKey="";
-function updateControls(){ $("playPauseBtn").disabled=commandBusy||!currentItem; $("nextBtn").disabled=commandBusy||!currentItem; $("playPauseIcon").textContent=paused?"▶":"Ⅱ"; $("playPauseBtn").setAttribute("aria-label",paused?"Play":"Pause"); }
+const icons = {
+  play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5z" fill="currentColor"/></svg>',
+  pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 5h3.8v14H7.5zM15 5h3.8v14H15z" fill="currentColor"/></svg>',
+  next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5v13L14 12 4 5.5zm10 0v13l7-6.5-7-6.5z" fill="currentColor"/></svg>'
+};
+function updateControls(){
+  $("playPauseBtn").disabled=commandBusy||!currentItem;
+  $("nextBtn").disabled=commandBusy||!currentItem;
+  $("playPauseIcon").innerHTML=paused?icons.play:icons.pause;
+  $("playPauseBtn").setAttribute("aria-label",paused?"Play":"Pause");
+}
 $("playPauseBtn").addEventListener("click",async()=>{if(commandBusy||!currentItem)return;commandBusy=true;updateControls();try{await api(`https://api.spotify.com/v1/me/player/${paused?"play":"pause"}`,{method:"PUT"});await update();}catch(err){showMessage(`Playback control failed: ${err.message}`);}finally{commandBusy=false;updateControls();}});
 $("nextBtn").addEventListener("click",async()=>{if(commandBusy||!currentItem)return;commandBusy=true;updateControls();try{await api("https://api.spotify.com/v1/me/player/next",{method:"POST"});await new Promise(r=>setTimeout(r,500));lastQueueLookup=0;await update();}catch(err){showMessage(`Next track failed: ${err.message}`);}finally{commandBusy=false;updateControls();}});
 function setAccentFromImage(url){
@@ -88,8 +98,14 @@ async function api(url, options = {}) {
   let response = await request();
   if (response.status === 401) { await refreshAccessToken(); response = await request(); }
   if (response.status === 204) return null;
-  if (!response.ok) { const body = await response.json().catch(() => ({})); throw new Error(body.error?.message || `Spotify API returned ${response.status}`); }
-  return response.json();
+  const raw = await response.text();
+  let body = null;
+  if (raw.trim()) {
+    try { body = JSON.parse(raw); }
+    catch (_) { if (!response.ok) throw new Error(`Spotify API returned ${response.status}`); return null; }
+  }
+  if (!response.ok) throw new Error(body?.error?.message || body?.error_description || `Spotify API returned ${response.status}`);
+  return body;
 }
 async function lookupLyrics(item) {
   const key = `${item.id}|${item.name}`;
