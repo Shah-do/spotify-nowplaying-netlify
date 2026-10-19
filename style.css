@@ -232,3 +232,31 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
  .cover{max-height:100%!important}
  .details{height:100%!important;max-height:100%!important}
 }
+
+/* Spacing and integrated Up Next card */
+.display-wrap{padding-top:clamp(132px,17vh,168px)!important;padding-bottom:clamp(28px,5vh,52px)!important}
+.topbar{top:clamp(22px,3.5vh,36px)!important;left:clamp(28px,4.2vw,72px)!important;right:clamp(28px,4.2vw,72px)!important}
+.clock{line-height:1!important}
+.player,.projector .player{position:relative!important}
+.queue-card{
+ position:absolute!important;right:clamp(24px,3vw,40px)!important;bottom:clamp(20px,3vw,32px)!important;
+ width:min(300px,38%)!important;min-height:68px!important;
+ padding:8px 12px!important;gap:10px!important;
+ border:0!important;outline:0!important;border-radius:16px!important;
+ background:rgba(10,12,15,.72)!important;box-shadow:none!important;
+ backdrop-filter:blur(16px)!important;-webkit-backdrop-filter:blur(16px)!important;
+ z-index:4!important;
+}
+.queue-cover{width:46px!important;height:46px!important;border-radius:9px!important}
+.queue-label{font-size:.58rem!important;letter-spacing:.16em!important;margin-bottom:3px!important}
+.queue-title{font-size:.82rem!important}
+.queue-artist{font-size:.7rem!important}
+@media(max-width:760px){
+ .display-wrap{padding-top:90px!important;padding-bottom:130px!important}
+ .queue-card{position:relative!important;right:auto!important;bottom:auto!important;width:100%!important;max-width:500px!important;margin:16px auto 0!important}
+ .player,.projector .player{overflow:visible!important}
+}
+@media(max-height:700px) and (min-width:761px){
+ .display-wrap{padding-top:92px!important;padding-bottom:28px!important}
+ .player,.projector .player{height:min(581px,calc(100svh - 120px))!important}
+}
