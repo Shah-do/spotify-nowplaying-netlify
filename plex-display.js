@@ -43,20 +43,19 @@
     else{$("track").textContent=item.title||"Now playing";$("artist").textContent=item.year?String(item.year):"Plex"}
     const extras=[];if(item.director.length)extras.push("Directed by "+item.director.join(", "));if(item.genres.length)extras.push(item.genres.slice(0,3).join(" · "));$("mediaMeta").textContent=extras.join("  /  ");
     const cover=$("cover");
-    // The authenticated art endpoint is already used successfully by the
-    // screensaver, so use that same URL for the visible artwork first.
     cover.onerror=()=>{
-      if(item.thumb && cover.dataset.triedPoster!=="1"){
-        cover.dataset.triedPoster="1";
-        cover.src=item.thumb;
-      }else{
-        cover.onerror=null;
-        cover.removeAttribute("src");
-        cover.alt="Plex artwork failed to load";
-      }
+      cover.onerror=null;
+      if(item.backdrop){cover.style.objectFit="cover";cover.src=item.backdrop;}
+      else {cover.removeAttribute("src");cover.alt="Plex artwork unavailable";}
     };
-    cover.dataset.triedPoster="0";
-    cover.src=item.thumb||"";
+    cover.onload=()=>{
+      const ratio=cover.naturalWidth/Math.max(1,cover.naturalHeight);
+      if((ratio<0.88||ratio>1.12)&&item.backdrop&&cover.src!==item.backdrop){cover.style.objectFit="cover";cover.src=item.backdrop;}
+      else cover.style.objectFit="cover";
+      updateBadgeContrast();
+    };
+    cover.style.objectFit="cover";
+    cover.src=item.thumb||item.backdrop||"";
     cover.alt="Plex artwork";
     if(item.backdrop)setBackdrop(item.backdrop)}
     $("bar").style.width=item.duration?Math.min(100,item.offset/item.duration*100)+"%":"0%";$("elapsed").textContent=formatMs(item.offset);$("duration").textContent=formatMs(item.duration);$("message").textContent=item.paused?"Paused on Plex":""}
