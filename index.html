@@ -2,24 +2,50 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#080a0d"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="pwa-icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="pwa-icon.svg"><title>NowPlaying — Spotify</title>
+<meta name="theme-color" content="#080a0d"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="pwa-icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="pwa-icon.svg"><title>NowPlaying — Setup</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="launcher">
-<main class="launch-card">
+<main class="launch-card setup-card">
   <p class="eyebrow">YOUR PERSONAL MUSIC DISPLAY</p>
   <h1>NowPlaying<span>.</span></h1>
-  <p class="subtitle">A calm, album-art-led display for whatever you're listening to.</p>
-  <label class="client-label" for="clientId">Spotify Client ID</label>
-  <input id="clientId" autocomplete="off" spellcheck="false" placeholder="Paste your Spotify app Client ID">
-  <p class="hint">Your Client ID is public by design. Never enter a Client Secret here.</p>
+  <p class="subtitle">A calm, cinematic display for Spotify and Plex.</p>
+
+  <section class="setup-section">
+    <h2>Spotify</h2>
+    <label class="client-label" for="clientId">Spotify Client ID</label>
+    <input id="clientId" autocomplete="off" spellcheck="false" placeholder="Paste your Spotify app Client ID">
+    <p class="hint">Client ID is public by design. Never enter a Spotify Client Secret.</p>
+  </section>
+
+  <section class="setup-section">
+    <h2>Plex integration</h2>
+    <label class="client-label" for="bridgeUrl">Private bridge URL <span class="optional">recommended</span></label>
+    <input id="bridgeUrl" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="https://nowplaying-bridge.example.com">
+    <p class="hint">The bridge runs on your server and keeps your Tautulli API key off the public website. See the bridge folder in the repository for Docker setup.</p>
+    <details class="direct-settings">
+      <summary>Advanced: direct Tautulli connection</summary>
+      <p class="hint security-note">Only use this if you understand the trade-off: these values stay in this browser's local storage, but a key used by a browser cannot be kept secret from that browser. Direct access also requires Tautulli CORS to allow this website. A private bridge is safer.</p>
+      <label class="client-label" for="tautulliUrl">Tautulli URL</label>
+      <input id="tautulliUrl" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="https://tautulli.example.com">
+      <label class="client-label" for="tautulliKey">Tautulli API key</label>
+      <input id="tautulliKey" type="password" autocomplete="new-password" spellcheck="false" placeholder="Stored only in this browser">
+    </details>
+    <div class="settings-actions">
+      <button id="savePlexBtn" class="secondary">Save Plex settings</button>
+      <button id="testPlexBtn" class="secondary">Test connection</button>
+    </div>
+    <label class="toggle-row"><input id="plexEnabled" type="checkbox" checked> Enable Plex display and screensaver</label>
+    <p id="plexStatus" role="status" class="status"></p>
+  </section>
+
   <div class="actions">
     <button id="desktopBtn">Desktop mode</button>
     <button id="projectorBtn" class="secondary">Projector mode</button>
   </div>
   <p id="status" role="status" class="status"></p>
-  <button id="disconnectBtn" class="link-button" hidden>Disconnect this browser</button>
-  <p class="footer">Uses Spotify playback metadata and LRCLIB synced lyrics where available.</p>
+  <button id="disconnectBtn" class="link-button" hidden>Disconnect Spotify on this browser</button>
+  <p class="footer">Spotify lyrics use LRCLIB when available. Plex playback is read-only.</p>
 </main>
 <script src="app.js"></script>
 <script>if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(console.error)); }</script></body>
