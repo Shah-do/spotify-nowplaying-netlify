@@ -59,7 +59,7 @@
     if(item.ratingKey){
       plexFetch("/library/metadata/"+encodeURIComponent(item.ratingKey),{}, "application/xml")
         .then(r=>r.text())
-        .then(text=>{
+        .then(async text=>{
           const doc=new DOMParser().parseFromString(text,"application/xml");
           const meta=xmlItems(doc,"Video")[0]||xmlItems(doc,"Directory")[0];
           if(!meta)return;
