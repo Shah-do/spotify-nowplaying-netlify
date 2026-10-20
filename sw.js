@@ -1,4 +1,4 @@
-const CACHE_NAME = "nowplaying-shell-v12";
+const CACHE_NAME = "nowplaying-shell-v13";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,6 +10,8 @@ const APP_SHELL = [
   "./plex-display.js",
   "./placeholder.svg",
   "./pwa-icon.svg",
+  "./Spotify.svg",
+  "./Plex.svg",
   "./manifest.webmanifest"
 ];
 
