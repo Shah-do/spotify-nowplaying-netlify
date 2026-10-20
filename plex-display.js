@@ -39,7 +39,23 @@
   function showPlex(item){setMode("plex");const key=[item.type,item.title,item.show,item.season,item.episode].join("|");if(key!==plexItemKey){plexItemKey=key;
     if(item.type==="episode"||item.type==="show"){$("track").textContent=item.show||item.title;const s=item.season?String(item.season).padStart(2,"0"):"—",e=item.episode?String(item.episode).padStart(2,"0"):"—";$("artist").textContent="S"+s+" · E"+e+"  "+item.episode_title}
     else{$("track").textContent=item.title||"Now playing";$("artist").textContent=item.year?String(item.year):"Plex"}
-    const extras=[];if(item.director.length)extras.push("Directed by "+item.director.join(", "));if(item.genres.length)extras.push(item.genres.slice(0,3).join(" · "));$("mediaMeta").textContent=extras.join("  /  ");$("cover").src=item.thumb||"placeholder.svg";$("cover").alt="Plex poster";if(item.backdrop)setBackdrop(item.backdrop)}
+    const extras=[];if(item.director.length)extras.push("Directed by "+item.director.join(", "));if(item.genres.length)extras.push(item.genres.slice(0,3).join(" · "));$("mediaMeta").textContent=extras.join("  /  ");
+    const cover=$("cover");
+    // If the poster endpoint fails through a reverse proxy, fall back to the
+    // item's art endpoint, then to the local placeholder.
+    cover.onerror=()=>{
+      if(item.backdrop && cover.dataset.fallbackTried!=="1"){
+        cover.dataset.fallbackTried="1";
+        cover.src=item.backdrop;
+      }else{
+        cover.onerror=null;
+        cover.src="placeholder.svg";
+      }
+    };
+    cover.dataset.fallbackTried="0";
+    cover.src=item.thumb||item.backdrop||"placeholder.svg";
+    cover.alt="Plex poster";
+    if(item.backdrop)setBackdrop(item.backdrop)}
     $("bar").style.width=item.duration?Math.min(100,item.offset/item.duration*100)+"%":"0%";$("elapsed").textContent=formatMs(item.offset);$("duration").textContent=formatMs(item.duration);$("message").textContent=item.paused?"Paused on Plex":""}
   async function loadScreensaver(){if(!plexUrl||!plexToken||saverBusy)return;saverBusy=true;try{
     const r=await plexFetch("/library/recentlyAdded",{type:"1", "X-Plex-Container-Start":"0","X-Plex-Container-Size":"30"});const xml=new DOMParser().parseFromString(await r.text(),"application/xml");const items=[];
