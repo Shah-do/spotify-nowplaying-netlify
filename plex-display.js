@@ -11,7 +11,9 @@
   async function plexFetch(path,params={},accept="application/xml"){if(!plexUrl||!plexToken)throw new Error("Configure Plex server URL and token in setup.");const r=await fetch(apiUrl(path,params),{cache:"no-store",headers:{Accept:accept}});if(!r.ok)throw new Error("Plex HTTP "+r.status);return r}
   function xmlItems(xml,tag){return Array.from(xml.getElementsByTagName(tag))}
   function attr(el,...names){for(const n of names){const v=el.getAttribute(n);if(v)return v}return ""}
-  function setSource(source){const b=$("sourceBadge");if(!b)return;b.innerHTML=source==="plex"?plexMark:source==="spotify"?spotifyMark:"";b.hidden=!source;b.setAttribute("aria-label",source==="plex"?"Plex playback":"Spotify playback")}
+  function setSource(source){const b=$("sourceBadge"),img=$("sourceBadgeIcon");if(!b||!img)return;img.src=source==="plex"?"./Plex.svg":source==="spotify"?"./Spotify.svg":"";b.hidden=!source;b.setAttribute("aria-label",source==="plex"?"Plex playback":"Spotify playback");if(source)updateBadgeContrast()}
+  function updateBadgeContrast(){const badge=$("sourceBadge"),cover=$("cover");if(!badge||badge.hidden||!cover)return;try{const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d",{willReadFrequently:true});canvas.width=24;canvas.height=24;ctx.drawImage(cover,0,0,24,24);const d=ctx.getImageData(0,0,24,24).data;let total=0;for(let i=0;i<d.length;i+=4)total+=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];badge.classList.toggle("on-light-background",total/(d.length/4)>145)}catch(_){badge.classList.remove("on-light-background")}}
+  $("cover").addEventListener("load",updateBadgeContrast);
   function setBackdrop(url){if(!backdrop||!url)return;backdrop.style.backgroundImage='url("'+String(url).replace(/["\\]/g,"")+'")';backdrop.classList.add("visible")}
   function imageUrl(path){if(!path)return "";if(/^https?:\/\//i.test(path))return path;return plexUrl&&plexToken?apiUrl(path):""}
   function formatMs(ms){const s=Math.max(0,Math.floor(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
