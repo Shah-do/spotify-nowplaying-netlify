@@ -727,3 +727,51 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
 .topbar-actions .back{height:42px!important;min-height:42px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
 .display.plex-mode .cover{border-radius:14px!important;object-fit:contain!important;background:transparent!important;align-self:center!important;justify-self:stretch!important}
 @media(max-width:760px){.topbar-actions .source-badge{height:42px!important;min-width:42px!important}.topbar-actions .source-badge img{width:42px!important;height:42px!important}}
+
+
+/* Final UI correction: remove Setup outline and normalize icon/poster geometry. */
+.topbar .back{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  height:42px!important;
+  min-height:42px!important;
+  padding:0 16px!important;
+  border-radius:999px!important;
+}
+.topbar .back:focus,.topbar .back:focus-visible{
+  outline:none!important;
+  box-shadow:none!important;
+}
+.topbar-actions{gap:12px!important;align-items:center!important}
+.topbar-actions .source-badge{
+  width:42px!important;height:42px!important;min-width:42px!important;
+  padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  border-radius:50%!important;overflow:hidden!important;opacity:.68!important;
+}
+.topbar-actions .source-badge img{
+  display:block!important;width:27px!important;height:27px!important;
+  max-width:27px!important;max-height:27px!important;object-fit:contain!important;
+  opacity:.85!important;
+}
+.topbar-actions .source-badge.on-light-background img{filter:brightness(0)!important}
+.topbar-actions .source-badge:not(.on-light-background) img{filter:brightness(0) invert(1)!important}
+.display.plex-mode .player,.display.plex-mode .projector .player{
+  padding:3%!important;
+  grid-template-columns:minmax(0,.96fr) minmax(0,1fr)!important;
+  gap:4%!important;
+  align-items:center!important;
+}
+.display.plex-mode .cover{
+  width:100%!important;height:auto!important;aspect-ratio:1!important;
+  max-width:none!important;max-height:none!important;
+  object-fit:contain!important;border-radius:14px!important;
+  align-self:center!important;justify-self:stretch!important;margin:0!important;
+}
+@media(max-width:760px){
+ .topbar-actions{gap:10px!important}
+ .topbar-actions .source-badge{width:42px!important;height:42px!important}
+ .topbar-actions .source-badge img{width:27px!important;height:27px!important}
+ .display.plex-mode .player{padding:18px!important;gap:16px!important}
+ .display.plex-mode .cover{width:min(66vw,280px)!important;margin:0 auto!important}
+}
