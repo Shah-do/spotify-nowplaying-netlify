@@ -45,18 +45,12 @@
     const cover=$("cover");
     cover.onerror=()=>{
       cover.onerror=null;
-      if(item.backdrop){cover.style.objectFit="cover";cover.src=item.backdrop;}
-      else {cover.removeAttribute("src");cover.alt="Plex artwork unavailable";}
-    };
-    cover.onload=()=>{
-      const ratio=cover.naturalWidth/Math.max(1,cover.naturalHeight);
-      if((ratio<0.88||ratio>1.12)&&item.backdrop&&cover.src!==item.backdrop){cover.style.objectFit="cover";cover.src=item.backdrop;}
-      else cover.style.objectFit="cover";
-      updateBadgeContrast();
+      if(item.backdrop && cover.src!==item.backdrop){cover.style.objectFit="cover";cover.src=item.backdrop;}
+      else {cover.removeAttribute("src");cover.alt="No Square Art or Background artwork available in Plex";}
     };
     cover.style.objectFit="cover";
-    cover.src=item.thumb||item.backdrop||"";
-    cover.alt="Plex artwork";
+    cover.src=item.squareArt||item.backdrop||"";
+    cover.alt=item.squareArt?"Plex Square Art":"Plex Background";
     if(item.backdrop)setBackdrop(item.backdrop)}
     $("bar").style.width=item.duration?Math.min(100,item.offset/item.duration*100)+"%":"0%";$("elapsed").textContent=formatMs(item.offset);$("duration").textContent=formatMs(item.duration);$("message").textContent=item.paused?"Paused on Plex":""}
   async function loadScreensaver(){if(!plexUrl||!plexToken||saverBusy)return;saverBusy=true;try{
