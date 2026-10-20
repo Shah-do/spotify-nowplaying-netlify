@@ -818,3 +818,47 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
  .topbar-actions .source-badge{width:42px!important;height:42px!important;min-width:42px!important}
  .topbar-actions .source-badge img{width:42px!important;height:42px!important;max-width:42px!important;max-height:42px!important}
 }
+
+
+/* Definitive Plex artwork geometry: preserve the portrait poster, don't put it
+   inside a square Spotify-cover box. The poster is vertically centered with
+   the same inset as the details column. */
+body.display.plex-mode .player{
+  grid-template-columns:minmax(0, .9fr) minmax(0, 1fr)!important;
+  grid-template-rows:minmax(0,1fr)!important;
+  align-items:center!important;
+  padding:clamp(28px,4vw,52px)!important;
+  gap:clamp(28px,4vw,52px)!important;
+}
+body.display.plex-mode #cover.cover{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:auto!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  border-radius:18px!important;
+  align-self:center!important;
+  justify-self:center!important;
+  margin:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+}
+body.display.plex-mode .details{min-width:0!important;align-self:center!important}
+body.display.plex-mode #cover.cover[src="placeholder.svg"]{object-fit:contain!important}
+/* The supplied SVGs have generous internal whitespace; scale the artwork so
+   its visible mark is as tall as the Setup control, without enlarging its slot. */
+.topbar-actions .source-badge{
+  width:42px!important;height:42px!important;min-width:42px!important;
+  flex:0 0 42px!important;overflow:visible!important;opacity:.68!important;
+}
+.topbar-actions .source-badge img{
+  width:58px!important;height:58px!important;max-width:none!important;max-height:none!important;
+  transform:scale(.9)!important;object-fit:contain!important;opacity:.78!important;
+}
+@media(max-width:760px){
+ body.display.plex-mode .player{padding:24px!important;gap:20px!important}
+ body.display.plex-mode #cover.cover{width:min(100%,320px)!important;max-height:48svh!important}
+ .topbar-actions .source-badge img{width:58px!important;height:58px!important}
+}
