@@ -803,3 +803,18 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
  border-radius:18px!important;
  align-self:center!important;justify-self:stretch!important;margin:0!important;
 }
+
+
+/* Source logo should match the Setup control's full 42px height and width. */
+.topbar-actions .source-badge{
+ width:42px!important;height:42px!important;min-width:42px!important;
+ opacity:.68!important;background:transparent!important;border:0!important;
+}
+.topbar-actions .source-badge img{
+ width:42px!important;height:42px!important;max-width:42px!important;max-height:42px!important;
+ object-fit:contain!important;opacity:.78!important;
+}
+@media(max-width:760px){
+ .topbar-actions .source-badge{width:42px!important;height:42px!important;min-width:42px!important}
+ .topbar-actions .source-badge img{width:42px!important;height:42px!important;max-width:42px!important;max-height:42px!important}
+}
