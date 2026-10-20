@@ -28,6 +28,9 @@
       <input id="tautulliUrl" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="https://tautulli.example.com">
       <label class="client-label" for="tautulliKey">Tautulli API key</label>
       <input id="tautulliKey" type="password" autocomplete="new-password" spellcheck="false" placeholder="Stored only in this browser">
+      <label class="client-label" for="plexUsers">Plex usernames to show <span class="optional">comma-separated</span></label>
+      <input id="plexUsers" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. yaman, familyaccount">
+      <p class="hint">Only playback sessions matching these usernames will be shown. Leave blank to show no Plex sessions.</p>
     </details>
     <div class="settings-actions">
       <button id="savePlexBtn" class="secondary">Save Plex settings</button>
