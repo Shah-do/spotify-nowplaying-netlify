@@ -189,12 +189,14 @@ async function update() {
     const data = await api("https://api.spotify.com/v1/me/player/currently-playing");
     if (!data || !data.item) {
       currentItem=null; updateControls();
+      window.dispatchEvent(new CustomEvent("nowplaying:spotify-state", {detail:{item:null}}));
       $("state") && ($("state").textContent = "SPOTIFY NOW PLAYING");
       showMessage("Nothing is playing right now. Start playback on Spotify.");
       await updateQueue(); return;
     }
     const item = data.item;
     currentItem=item;
+    window.dispatchEvent(new CustomEvent("nowplaying:spotify-state", {detail:{item}}));
     // Spotify's progress_ms is a snapshot from the API response. Start the
     // local clock immediately, before any slow lyrics/artist-image requests.
     progressMs = data.progress_ms || 0;
