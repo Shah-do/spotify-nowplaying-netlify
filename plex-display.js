@@ -3,14 +3,14 @@
   const CONFIG_KEY = "nowplaying_plex_config";
   const backdrop = $("artistBackdrop");
   const body = document.body;
-  let tautulliUrl = "", apiKey = "", plexEnabled = true;
+  let tautulliUrl = "", apiKey = "", plexEnabled = true, allowedPlexUsers = [];
   let lastMode = "", plexItemKey = "", screensaverItems = [], screensaverIndex = -1;
   let lastSaverChange = 0, lastStatusCheck = 0, lastPlex = null, saverBusy = false;
 
   const spotifyMark = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1ed760"/><path d="M5.2 9.1c4.5-1.4 9.9-.9 13.7 1.4M6 12.1c3.9-1.1 8.5-.7 11.8 1.2M6.8 15c3.1-.8 6.8-.5 9.6 1" fill="none" stroke="#101512" stroke-width="1.7" stroke-linecap="round"/></svg>';
   const plexMark = '<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#e5a00d"/><path d="M9 5h5l5 11-5 11H9l5-11L9 5Zm9 0h5l5 11-5 11h-5l5-11-5-11Z" fill="#171717"/></svg>';
   function readConfig(){try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||"{}")}catch(_){return{}}}
-  function loadConfig(){const c=readConfig();tautulliUrl=(c.tautulliUrl||"").replace(/\/$/,"");apiKey=c.tautulliKey||"";plexEnabled=c.enabled!==false}
+  function loadConfig(){const c=readConfig();tautulliUrl=(c.tautulliUrl||"").replace(/\/$/,"");apiKey=c.tautulliKey||"";plexEnabled=c.enabled!==false;allowedPlexUsers=(c.plexUsers||"").split(",").map(x=>x.trim().toLocaleLowerCase()).filter(Boolean)}
   function setSource(source){const badge=$("sourceBadge");if(!badge)return;badge.innerHTML=source==="plex"?plexMark:source==="spotify"?spotifyMark:"";badge.hidden=!source;badge.setAttribute("aria-label",source==="plex"?"Plex playback":"Spotify playback")}
   function setBackdrop(url){if(!backdrop||!url)return;backdrop.style.backgroundImage='url("'+String(url).replace(/["\\]/g,"") + '")';backdrop.classList.add("visible")}
   function formatMs(ms){const s=Math.max(0,Math.floor(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
@@ -26,6 +26,21 @@
     if(/^https?:\/\//i.test(path))return path;
     if(!tautulliUrl||!apiKey)return "";
     return tautulliUrl+"/image?"+new URLSearchParams({img:path,apikey:apiKey});
+  }
+  function sessionUsername(session){
+    const values = [
+      session.username, session.user_name, session.user, session.friendly_name,
+      session.user_title, session.user_details?.username, session.user_details?.friendly_name
+    ];
+    return values.map(value => {
+      if (value && typeof value === "object") return value.username || value.friendly_name || value.title || "";
+      return typeof value === "string" ? value : "";
+    }).map(value => value.trim().toLocaleLowerCase()).filter(Boolean);
+  }
+  function isAllowedSession(session){
+    // Fail closed: no allowlist or no recognizable username means don't display it.
+    if (!allowedPlexUsers.length) return false;
+    return sessionUsername(session).some(name => allowedPlexUsers.includes(name));
   }
   function normalizeSession(s){
     const state=(s.state||"").toLowerCase(),type=(s.media_type||"").toLowerCase();
@@ -74,7 +89,7 @@
     if(!plexEnabled||!tautulliUrl||!apiKey){lastPlex=null;if(window.currentItem)setMode("spotify");else{setMode("idle");rotateScreensaver()}return}
     try{
       const data=await tautulli("get_activity");const sessions=data?.sessions||[];
-      const normalized=sessions.filter(s=>["movie","episode","show"].includes((s.media_type||"").toLowerCase())).map(normalizeSession);
+      const normalized=sessions.filter(s=>["movie","episode","show"].includes((s.media_type||"").toLowerCase())&&isAllowedSession(s)).map(normalizeSession);
       lastPlex=normalized.find(s=>s.playing)||normalized.find(s=>s.paused)||null;lastStatusCheck=Date.now();
       if(lastPlex){showPlex(lastPlex);return}
     }catch(_){/* A CORS/network error must not interrupt Spotify playback. */}
