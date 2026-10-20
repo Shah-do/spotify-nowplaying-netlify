@@ -40,21 +40,46 @@ document.querySelector("#savePlexBtn").addEventListener("click", savePlexConfig)
 plexEnabledInput.addEventListener("change", savePlexConfig);
 document.querySelector("#testPlexBtn").addEventListener("click", async () => {
   const config = savePlexConfig();
-  plexStatus.textContent = "Testing Plex connection…";
+  plexStatus.textContent = "Checking Plex identity and live sessions…";
   try {
     if (!config.plexUrl || !config.plexToken) throw new Error("Enter both the Plex server URL and token.");
-    const url = new URL(config.plexUrl + "/identity");
-    url.search = new URLSearchParams({"X-Plex-Token":config.plexToken});
-    const response = await fetch(url, {cache:"no-store", headers:{"Accept":"application/xml"}});
-    if (!response.ok) throw new Error(`Plex returned HTTP ${response.status}`);
-    const xml = new DOMParser().parseFromString(await response.text(), "application/xml");
-    if (xml.querySelector("parsererror")) throw new Error("Plex responded, but the response was not valid XML.");
-    const machine = xml.querySelector("MediaContainer")?.getAttribute("machineIdentifier");
-    if (!machine) throw new Error("Plex responded, but its identity was not found. Check the server URL and token.");
-    plexStatus.textContent = "Plex connection successful. Server identity verified.";
+    const headers = {"Accept":"application/xml"};
+    const identityUrl = new URL(config.plexUrl + "/identity");
+    identityUrl.search = new URLSearchParams({"X-Plex-Token":config.plexToken});
+    const identityResponse = await fetch(identityUrl, {cache:"no-store", headers});
+    if (!identityResponse.ok) throw new Error("Plex identity returned HTTP " + identityResponse.status + ".");
+    const identityXml = new DOMParser().parseFromString(await identityResponse.text(), "application/xml");
+    const machine = identityXml.querySelector("MediaContainer")?.getAttribute("machineIdentifier");
+    if (!machine) throw new Error("Plex identity response was not recognized. Check the server URL and token.");
+
+    const sessionsUrl = new URL(config.plexUrl + "/status/sessions");
+    sessionsUrl.search = new URLSearchParams({"X-Plex-Token":config.plexToken});
+    const sessionsResponse = await fetch(sessionsUrl, {cache:"no-store", headers});
+    if (!sessionsResponse.ok) throw new Error("Plex sessions returned HTTP " + sessionsResponse.status + ".");
+    const sessionsXml = new DOMParser().parseFromString(await sessionsResponse.text(), "application/xml");
+    if (sessionsXml.querySelector("parsererror")) throw new Error("Plex sessions response was not valid XML.");
+    const media = Array.from(sessionsXml.querySelectorAll("Video, Track, Photo"));
+    const users = [];
+    for (const item of media) {
+      const userNodes = Array.from(item.getElementsByTagName("User"));
+      const names = [
+        item.getAttribute("user"), item.getAttribute("username"), item.getAttribute("userTitle"),
+        item.getAttribute("userName"),
+        ...userNodes.flatMap(u => [u.getAttribute("title"),u.getAttribute("username"),u.getAttribute("name")])
+      ].filter(Boolean);
+      users.push(...names);
+    }
+    const uniqueUsers = [...new Set(users)];
+    const wanted = config.plexUsers.split(",").map(x=>x.trim().toLocaleLowerCase().replace(/[^a-z0-9]/g,"")).filter(Boolean);
+    const matched = uniqueUsers.filter(name=>wanted.includes(name.toLocaleLowerCase().replace(/[^a-z0-9]/g,"")));
+    const playing = media.filter(item => ["playing","buffering","paused"].includes((item.getAttribute("state")||"").toLowerCase()));
+    const mediaSummary = media.length ? media.length + " active media item(s)" : "no active media items";
+    const userSummary = uniqueUsers.length ? " Plex user fields found: " + uniqueUsers.join(", ") + "." : " No username fields were found in the session response.";
+    const matchSummary = wanted.length ? (matched.length ? " Username match: " + matched.join(", ") + "." : " No returned username matches your allowlist.") : " The username allowlist is empty.";
+    plexStatus.textContent = "Plex server verified; /status/sessions returned " + mediaSummary + " (" + playing.length + " playing/paused)." + userSummary + matchSummary;
   } catch (error) {
     const cors = error instanceof TypeError ? " This is often caused by a CORS restriction, an unreachable server, or an HTTPS/mixed-content issue." : "";
-    plexStatus.textContent = `Connection failed: ${error.message}.${cors}`;
+    plexStatus.textContent = "Plex test failed: " + error.message + cors;
   }
 });
 
