@@ -20,14 +20,14 @@
 
   <section class="setup-section">
     <h2>Plex integration</h2>
-    <p class="hint">Connect directly to your existing Tautulli instance. No NowPlaying server or extra Docker container is needed. Tautulli must allow browser requests from this website (CORS).</p>
+    <p class="hint">Connect directly to your Plex Media Server. No Plex, NowPlaying server, or extra Docker container is needed. Your Plex server must allow browser requests from this website (CORS).</p>
     <details class="direct-settings" open>
-      <summary>Tautulli connection</summary>
-      <p class="hint security-note">Your URL and API key are saved only in this browser and are never committed to GitHub. Because this is a browser-only app, the key is visible to this browser and is not a server-side secret.</p>
-      <label class="client-label" for="tautulliUrl">Tautulli URL</label>
-      <input id="tautulliUrl" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="https://tautulli.example.com">
-      <label class="client-label" for="tautulliKey">Tautulli API key</label>
-      <input id="tautulliKey" type="password" autocomplete="new-password" spellcheck="false" placeholder="Stored only in this browser">
+      <summary>Plex server connection</summary>
+      <p class="hint security-note">Your Plex URL and token are saved only in this browser and are never committed to GitHub. Because this is a browser-only app, the token is visible to this browser and is not a server-side secret.</p>
+      <label class="client-label" for="plexUrl">Plex server URL</label>
+      <input id="plexUrl" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="https://your-plex-server.example.com">
+      <label class="client-label" for="plexToken">Plex token</label>
+      <input id="plexToken" type="password" autocomplete="new-password" spellcheck="false" placeholder="Paste your Plex token">
       <label class="client-label" for="plexUsers">Plex usernames to show <span class="optional">comma-separated</span></label>
       <input id="plexUsers" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. yaman, familyaccount">
       <p class="hint">Only playback sessions matching these usernames will be shown. Leave blank to show no Plex sessions.</p>
