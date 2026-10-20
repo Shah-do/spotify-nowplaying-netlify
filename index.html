@@ -20,12 +20,10 @@
 
   <section class="setup-section">
     <h2>Plex integration</h2>
-    <label class="client-label" for="bridgeUrl">Private bridge URL <span class="optional">recommended</span></label>
-    <input id="bridgeUrl" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="https://nowplaying-bridge.example.com">
-    <p class="hint">The bridge runs on your server and keeps your Tautulli API key off the public website. See the bridge folder in the repository for Docker setup.</p>
-    <details class="direct-settings">
-      <summary>Advanced: direct Tautulli connection</summary>
-      <p class="hint security-note">Only use this if you understand the trade-off: these values stay in this browser's local storage, but a key used by a browser cannot be kept secret from that browser. Direct access also requires Tautulli CORS to allow this website. A private bridge is safer. Direct mode is only a connection test; Plex playback and screensaver display use the bridge URL above.</p>
+    <p class="hint">Connect directly to your existing Tautulli instance. No NowPlaying server or extra Docker container is needed. Tautulli must allow browser requests from this website (CORS).</p>
+    <details class="direct-settings" open>
+      <summary>Tautulli connection</summary>
+      <p class="hint security-note">Your URL and API key are saved only in this browser and are never committed to GitHub. Because this is a browser-only app, the key is visible to this browser and is not a server-side secret.</p>
       <label class="client-label" for="tautulliUrl">Tautulli URL</label>
       <input id="tautulliUrl" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="https://tautulli.example.com">
       <label class="client-label" for="tautulliKey">Tautulli API key</label>
