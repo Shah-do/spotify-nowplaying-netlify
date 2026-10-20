@@ -32,7 +32,7 @@
     ];
     return values.map(canonicalUsername).filter(Boolean);
   }
-  function normalizeSession(el){const type=attr(el,"type").toLowerCase(),state=attr(el,"state").toLowerCase(),title=attr(el,"title")||"Unknown title";const duration=Number(attr(el,"duration")||0),offset=Number(attr(el,"viewOffset")||0);
+  function normalizeSession(el){const type=attr(el,"type").toLowerCase(),player=el.getElementsByTagName("Player")[0],state=(attr(el,"state")||attr(player,"state")).toLowerCase(),title=attr(el,"title")||"Unknown title";const duration=Number(attr(el,"duration")||0),offset=Number(attr(el,"viewOffset")||0);
     const grand=el.getElementsByTagName("grandparentTitle")[0];const director=xmlItems(el,"Director").map(x=>attr(x,"tag")).filter(Boolean);const genres=xmlItems(el,"Genre").map(x=>attr(x,"tag")).filter(Boolean);
     const thumb=attr(el,"thumb"),art=attr(el,"art")||attr(el,"grandparentThumb")||thumb;
     return {title,year:attr(el,"year"),type,state,playing:state==="playing"||state==="buffering",paused:state==="paused",duration,offset,thumb:imageUrl(thumb),backdrop:imageUrl(art),director,genres,show:attr(el,"grandparentTitle"),season:attr(el,"parentIndex"),episode:attr(el,"index"),episode_title:title}}
