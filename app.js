@@ -32,7 +32,7 @@ function savePlexConfig() {
     enabled: plexEnabledInput.checked
   };
   localStorage.setItem(PLEX_CONFIG_KEY, JSON.stringify(config));
-  plexStatus.textContent = "Tautulli settings saved in this browser only.";
+  plexStatus.textContent = "Plex settings saved in this browser only.";
   return config;
 }
 loadPlexConfig();
@@ -40,18 +40,20 @@ document.querySelector("#savePlexBtn").addEventListener("click", savePlexConfig)
 plexEnabledInput.addEventListener("change", savePlexConfig);
 document.querySelector("#testPlexBtn").addEventListener("click", async () => {
   const config = savePlexConfig();
-  plexStatus.textContent = "Testing Tautulli connection…";
+  plexStatus.textContent = "Testing Plex connection…";
   try {
     if (!config.plexUrl || !config.plexToken) throw new Error("Enter both the Plex server URL and token.");
-    const url = new URL(config.tautulliUrl + "/api/v2");
-    url.search = new URLSearchParams({apikey:config.tautulliKey,cmd:"get_activity"});
-    const response = await fetch(url, {cache:"no-store"});
-    if (!response.ok) throw new Error(`Tautulli returned HTTP ${response.status}`);
-    const data = await response.json();
-    if (data?.response?.result !== "success") throw new Error(data?.response?.message || "Tautulli API rejected the request");
-    plexStatus.textContent = "Tautulli connection successful. Playback data can be read by this browser.";
+    const url = new URL(config.plexUrl + "/identity");
+    url.search = new URLSearchParams({"X-Plex-Token":config.plexToken});
+    const response = await fetch(url, {cache:"no-store", headers:{"Accept":"application/xml"}});
+    if (!response.ok) throw new Error(`Plex returned HTTP ${response.status}`);
+    const xml = new DOMParser().parseFromString(await response.text(), "application/xml");
+    if (xml.querySelector("parsererror")) throw new Error("Plex responded, but the response was not valid XML.");
+    const machine = xml.querySelector("MediaContainer")?.getAttribute("machineIdentifier");
+    if (!machine) throw new Error("Plex responded, but its identity was not found. Check the server URL and token.");
+    plexStatus.textContent = "Plex connection successful. Server identity verified.";
   } catch (error) {
-    const cors = error instanceof TypeError ? " This may be a CORS restriction in Tautulli." : "";
+    const cors = error instanceof TypeError ? " This is often caused by a CORS restriction, an unreachable server, or an HTTPS/mixed-content issue." : "";
     plexStatus.textContent = `Connection failed: ${error.message}.${cors}`;
   }
 });
