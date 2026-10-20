@@ -11,6 +11,8 @@ let progressMs = 0;
 let durationMs = 0;
 let paused = false;
 let lastLyricsLookup = "";
+let artistBackgroundRequest = 0;
+let spotifyUpdateRequest = 0;
 
 function formatTime(ms) {
   const total = Math.max(0, Math.floor(ms / 1000));
@@ -73,13 +75,19 @@ function setAccentFromImage(url){
   img.onerror=fallback;img.src=url;
 }
 async function updateArtistBackground(item){
+  const requestId=++artistBackgroundRequest;
   const artist=item.artists?.[0];const backdrop=$("artistBackdrop");
   backdrop.classList.remove("visible");backdrop.style.backgroundImage="none";
   if(!artist?.name)return;
+  const stillCurrent=()=>requestId===artistBackgroundRequest &&
+    window.currentItem===item &&
+    !document.body.classList.contains("plex-mode") &&
+    !document.body.classList.contains("idle");
   // Prefer the artist profile image from Spotify, never the album cover.
   try{
     if(artist.id){
       const data=await api(`https://api.spotify.com/v1/artists/${artist.id}`);
+      if(!stillCurrent())return;
       const image=data.images?.[0]?.url;
       if(image){backdrop.style.backgroundImage=`url("${image}")`;backdrop.classList.add("visible");return;}
     }
@@ -89,9 +97,10 @@ async function updateArtistBackground(item){
     const q=encodeURIComponent(`"${artist.name}" musician portrait`);
     const url=`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${q}&gsrnamespace=6&gsrlimit=12&prop=imageinfo&iiprop=url&iiurlwidth=1800&format=json&origin=*`;
     const response=await fetch(url);if(!response.ok)return;
-    const data=await response.json();const pages=Object.values(data.query?.pages||{});
+    const data=await response.json();if(!stillCurrent())return;
+    const pages=Object.values(data.query?.pages||{});
     const candidate=pages.find(p=>p.title&&/\.(jpe?g|png|webp)$/i.test(p.title)&&p.imageinfo?.[0]?.thumburl);
-    if(candidate){backdrop.style.backgroundImage=`url("${candidate.imageinfo[0].thumburl}")`;backdrop.classList.add("visible");}
+    if(candidate&&stillCurrent()){backdrop.style.backgroundImage=`url("${candidate.imageinfo[0].thumburl}")`;backdrop.classList.add("visible");}
   }catch(_){}
 }
 async function updateQueue(force=false){if(!force&&Date.now()-lastQueueLookup<12000)return;lastQueueLookup=Date.now();try{const data=await api("https://api.spotify.com/v1/me/player/queue");const next=data?.queue?.[0];if(!next){$("queueTitle").textContent="Nothing queued";$("queueArtist").textContent="Add something to the queue";$("queueCover").src="placeholder.svg";$("queueCard").classList.add("empty");queueKey="";return;}const key=next.id||next.uri;if(key!==queueKey){queueKey=key;$("queueTitle").textContent=next.name;$("queueArtist").textContent=next.artists?.map(a=>a.name).join(", ")||"";$("queueCover").src=next.album?.images?.[0]?.url||"placeholder.svg";}$("queueCard").classList.remove("empty");}catch(_){$("queueTitle").textContent="Queue unavailable";$("queueArtist").textContent="Check Spotify playback";}}
@@ -185,9 +194,14 @@ function renderLyrics() {
   $("nextLyric").textContent = nextIndex >= 0 && nextIndex < lyrics.length ? lyrics[nextIndex].text : "";
 }
 async function update() {
+  const requestId=++spotifyUpdateRequest;
   try {
     const data = await api("https://api.spotify.com/v1/me/player/currently-playing");
+    if(requestId!==spotifyUpdateRequest || document.body.classList.contains("plex-mode"))return;
     if (!data || !data.item) {
+      artistBackgroundRequest++;
+      $("artistBackdrop").classList.remove("visible");
+      $("artistBackdrop").style.backgroundImage="none";
       currentItem=null; window.currentItem=null; updateControls();
       window.dispatchEvent(new CustomEvent("nowplaying:spotify-state", {detail:{item:null}}));
       $("state") && ($("state").textContent = "SPOTIFY NOW PLAYING");
@@ -211,8 +225,10 @@ async function update() {
       const images = item.album?.images || [];
       if(images[0]?.url){$("cover").src=images[0].url;setAccentFromImage(images[0].url);}
       await Promise.all([lookupLyrics(item),updateArtistBackground(item)]);
+      if(requestId!==spotifyUpdateRequest || window.currentItem!==item || document.body.classList.contains("plex-mode"))return;
       lastQueueLookup=0;
     }
+    if(requestId!==spotifyUpdateRequest || window.currentItem!==item || document.body.classList.contains("plex-mode"))return;
     $("state") && ($("state").textContent = paused ? "PAUSED" : "NOW PLAYING");
     showMessage("");
     const estimated = Math.min(durationMs, progressMs + (paused ? 0 : Date.now() - startedAt));
@@ -223,7 +239,8 @@ async function update() {
     updateControls();
     await updateQueue();
   } catch (err) {
-    showMessage(`${err.message} Return to setup if you need to reconnect.`);
+    if(requestId===spotifyUpdateRequest && !document.body.classList.contains("plex-mode"))
+      showMessage(`${err.message} Return to setup if you need to reconnect.`);
   }
 }
 if (!accessToken && !localStorage.getItem("spotify_refresh_token")) {
@@ -232,7 +249,7 @@ if (!accessToken && !localStorage.getItem("spotify_refresh_token")) {
   update();
   setInterval(update, 5000);
   setInterval(() => {
-    if (!paused && durationMs) {
+    if (!paused && durationMs && !document.body.classList.contains("plex-mode") && !document.body.classList.contains("idle")) {
       const elapsed = Math.min(durationMs, progressMs + (Date.now() - startedAt));
       $("bar").style.width = `${elapsed / durationMs * 100}%`;
       $("elapsed").textContent = formatTime(elapsed);
