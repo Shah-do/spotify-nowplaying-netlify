@@ -903,3 +903,7 @@ body.display .topbar-actions .source-badge img{
 body.display .topbar-actions .source-badge.on-light-background img{filter:brightness(0)!important}
 body.display .topbar-actions .source-badge:not(.on-light-background) img{filter:brightness(0) invert(1)!important}
 body.display .topbar-actions .source-badge[hidden]{display:none!important}
+
+
+/* Up Next is a Spotify queue concept; keep it hidden during Plex playback. */
+body.display.plex-mode #queueCard{display:none!important}
