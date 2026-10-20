@@ -41,20 +41,21 @@
     else{$("track").textContent=item.title||"Now playing";$("artist").textContent=item.year?String(item.year):"Plex"}
     const extras=[];if(item.director.length)extras.push("Directed by "+item.director.join(", "));if(item.genres.length)extras.push(item.genres.slice(0,3).join(" · "));$("mediaMeta").textContent=extras.join("  /  ");
     const cover=$("cover");
-    // If the poster endpoint fails through a reverse proxy, fall back to the
-    // item's art endpoint, then to the local placeholder.
+    // The authenticated art endpoint is already used successfully by the
+    // screensaver, so use that same URL for the visible artwork first.
     cover.onerror=()=>{
-      if(item.backdrop && cover.dataset.fallbackTried!=="1"){
-        cover.dataset.fallbackTried="1";
-        cover.src=item.backdrop;
+      if(item.thumb && cover.dataset.triedPoster!=="1"){
+        cover.dataset.triedPoster="1";
+        cover.src=item.thumb;
       }else{
         cover.onerror=null;
-        cover.src="placeholder.svg";
+        cover.removeAttribute("src");
+        cover.alt="Plex artwork failed to load";
       }
     };
-    cover.dataset.fallbackTried="0";
-    cover.src=item.thumb||item.backdrop||"placeholder.svg";
-    cover.alt="Plex poster";
+    cover.dataset.triedPoster="0";
+    cover.src=item.backdrop||item.thumb||"";
+    cover.alt="Plex artwork";
     if(item.backdrop)setBackdrop(item.backdrop)}
     $("bar").style.width=item.duration?Math.min(100,item.offset/item.duration*100)+"%":"0%";$("elapsed").textContent=formatMs(item.offset);$("duration").textContent=formatMs(item.duration);$("message").textContent=item.paused?"Paused on Plex":""}
   async function loadScreensaver(){if(!plexUrl||!plexToken||saverBusy)return;saverBusy=true;try{
