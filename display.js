@@ -198,6 +198,7 @@ async function update() {
   try {
     const data = await api("https://api.spotify.com/v1/me/player/currently-playing");
     if(requestId!==spotifyUpdateRequest || document.body.classList.contains("plex-mode"))return;
+    if(data?.item && document.body.classList.contains("idle"))return;
     if (!data || !data.item) {
       artistBackgroundRequest++;
       $("artistBackdrop").classList.remove("visible");
