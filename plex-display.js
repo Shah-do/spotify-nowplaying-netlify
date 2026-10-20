@@ -63,9 +63,23 @@
           const doc=new DOMParser().parseFromString(text,"application/xml");
           const meta=xmlItems(doc,"Video")[0]||xmlItems(doc,"Directory")[0];
           if(!meta)return;
-          const candidates=["squareArt","squareThumb","squareart","squarethumb","thumbSquare","artSquare","customArt","userThumb"];
+          // Plex versions/agents expose custom artwork under different
+          // attribute names. Search all returned metadata elements for an
+          // explicit Square Art field before considering generic artwork.
+          const nodes=[meta,...Array.from(meta.getElementsByTagName("*"))];
           let path="";
-          for(const key of candidates){path=attr(meta,key);if(path)break;}
+          const preferred=["squareArt","squareThumb","userSquareArt","userSquareThumb","squareart","squarethumb","thumbSquare","artSquare","userThumb"];
+          for(const node of nodes){
+            for(const key of preferred){path=attr(node,key);if(path)break;}
+            if(path)break;
+            for(const name of node.getAttributeNames()){
+              if(/square.*(art|thumb|image)|(?:art|thumb|image).*square/i.test(name)){
+                const value=node.getAttribute(name);
+                if(value&&value.startsWith("/")){path=value;break;}
+              }
+            }
+            if(path)break;
+          }
           if(path)setArtwork(path);
         }).catch(()=>{});
     }
