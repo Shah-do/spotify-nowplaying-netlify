@@ -56,7 +56,7 @@
       }
     };
     cover.dataset.triedPoster="0";
-    cover.src=item.backdrop||item.thumb||"";
+    cover.src=item.thumb||"";
     cover.alt="Plex artwork";
     if(item.backdrop)setBackdrop(item.backdrop)}
     $("bar").style.width=item.duration?Math.min(100,item.offset/item.duration*100)+"%":"0%";$("elapsed").textContent=formatMs(item.offset);$("duration").textContent=formatMs(item.duration);$("message").textContent=item.paused?"Paused on Plex":""}
