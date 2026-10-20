@@ -37,7 +37,7 @@
   function normalizeSession(el){const type=attr(el,"type").toLowerCase(),player=el.getElementsByTagName("Player")[0],state=(attr(el,"state")||attr(player,"state")).toLowerCase(),title=attr(el,"title")||"Unknown title";const duration=Number(attr(el,"duration")||0),offset=Number(attr(el,"viewOffset")||0);
     const grand=el.getElementsByTagName("grandparentTitle")[0];const director=xmlItems(el,"Director").map(x=>attr(x,"tag")).filter(Boolean);const genres=xmlItems(el,"Genre").map(x=>attr(x,"tag")).filter(Boolean);
     const thumb=attr(el,"thumb"),art=attr(el,"art")||attr(el,"grandparentThumb")||thumb;const showThumb=attr(el,"grandparentThumb")||thumb;const showArt=attr(el,"grandparentArt")||art;const posterPath=(type==="episode"||type==="show")?showThumb:thumb;const posterArt=(type==="episode"||type==="show")?showArt:art;
-    return {title,year:attr(el,"year"),type,state,playing:state==="playing"||state==="buffering",paused:state==="paused",duration,offset,thumb:imageUrl(posterPath),backdrop:imageUrl(posterArt),director,genres,show:attr(el,"grandparentTitle"),season:attr(el,"parentIndex"),episode:attr(el,"index"),episode_title:title}}
+    return {title,year:attr(el,"year"),ratingKey:attr(el,"ratingKey"),type,state,playing:state==="playing"||state==="buffering",paused:state==="paused",duration,offset,thumb:imageUrl(posterPath),backdrop:imageUrl(posterArt),director,genres,show:attr(el,"grandparentTitle"),season:attr(el,"parentIndex"),episode:attr(el,"index"),episode_title:title}}
   function showPlex(item){setMode("plex");const key=[item.type,item.title,item.show,item.season,item.episode].join("|");if(key!==plexItemKey){plexItemKey=key;
     if(item.type==="episode"||item.type==="show"){$("track").textContent=item.show||item.title;const s=item.season?String(item.season).padStart(2,"0"):"—",e=item.episode?String(item.episode).padStart(2,"0"):"—";$("artist").textContent="S"+s+" · E"+e+"  "+item.episode_title}
     else{$("track").textContent=item.title||"Now playing";$("artist").textContent=item.year?String(item.year):"Plex"}
@@ -46,11 +46,29 @@
     cover.onerror=()=>{
       cover.onerror=null;
       if(item.backdrop && cover.src!==item.backdrop){cover.style.objectFit="cover";cover.src=item.backdrop;}
-      else {cover.removeAttribute("src");cover.alt="No Square Art or Background artwork available in Plex";}
+      else {cover.removeAttribute("src");cover.alt="Plex artwork unavailable";}
     };
     cover.style.objectFit="cover";
-    cover.src=item.squareArt||item.backdrop||"";
-    cover.alt=item.squareArt?"Plex Square Art":"Plex Background";
+    const setArtwork=(squarePath)=>{
+      const squareUrl=squarePath?imageUrl(squarePath):"";
+      cover.src=squareUrl||item.backdrop||item.thumb||"";
+      cover.alt=squareUrl?"Plex Square Art":item.backdrop?"Plex Background":"Plex Poster";
+      cover.style.objectFit="cover";
+    };
+    setArtwork("");
+    if(item.ratingKey){
+      plexFetch("/library/metadata/"+encodeURIComponent(item.ratingKey),{}, "application/xml")
+        .then(r=>r.text())
+        .then(text=>{
+          const doc=new DOMParser().parseFromString(text,"application/xml");
+          const meta=xmlItems(doc,"Video")[0]||xmlItems(doc,"Directory")[0];
+          if(!meta)return;
+          const candidates=["squareArt","squareThumb","squareart","squarethumb","thumbSquare","artSquare","customArt","userThumb"];
+          let path="";
+          for(const key of candidates){path=attr(meta,key);if(path)break;}
+          if(path)setArtwork(path);
+        }).catch(()=>{});
+    }
     if(item.backdrop)setBackdrop(item.backdrop)}
     $("bar").style.width=item.duration?Math.min(100,item.offset/item.duration*100)+"%":"0%";$("elapsed").textContent=formatMs(item.offset);$("duration").textContent=formatMs(item.duration);$("message").textContent=item.paused?"Paused on Plex":""}
   async function loadScreensaver(){if(!plexUrl||!plexToken||saverBusy)return;saverBusy=true;try{
