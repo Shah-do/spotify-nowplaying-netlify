@@ -63,24 +63,27 @@
           const doc=new DOMParser().parseFromString(text,"application/xml");
           const meta=xmlItems(doc,"Video")[0]||xmlItems(doc,"Directory")[0];
           if(!meta)return;
-          // Plex versions/agents expose custom artwork under different
-          // attribute names. Search all returned metadata elements for an
-          // explicit Square Art field before considering generic artwork.
-          const nodes=[meta,...Array.from(meta.getElementsByTagName("*"))];
-          let path="";
-          const preferred=["squareArt","squareThumb","userSquareArt","userSquareThumb","squareart","squarethumb","thumbSquare","artSquare","userThumb"];
-          for(const node of nodes){
-            for(const key of preferred){path=attr(node,key);if(path)break;}
-            if(path)break;
-            for(const name of node.getAttributeNames()){
-              if(/square.*(art|thumb|image)|(?:art|thumb|image).*square/i.test(name)){
-                const value=node.getAttribute(name);
-                if(value&&value.startsWith("/")){path=value;break;}
-              }
-            }
-            if(path)break;
-          }
-          if(path)setArtwork(path);
+
+          // Plex exposes the selected Square Art as an Image element with
+          // type="backgroundSquare"; it is not a squareArt attribute.
+          const squareImage=Array.from(doc.getElementsByTagName("Image"))
+            .find(image=>attr(image,"type")==="backgroundSquare");
+          let path=squareImage?attr(squareImage,"url"): "";
+
+          // Fallback: query Plex's dedicated Square Art asset list and use
+          // the selected Photo's thumb/key (some agents expose it only here).
+          const loadSquareArts=async()=>{
+            try{
+              const response=await plexFetch("/library/metadata/"+encodeURIComponent(item.ratingKey)+"/squareArts");
+              const squareDoc=new DOMParser().parseFromString(await response.text(),"application/xml");
+              const photos=xmlItems(squareDoc,"Photo");
+              const selected=photos.find(photo=>attr(photo,"selected")==="1")||photos[0];
+              return selected?attr(selected,"thumb","key"):"";
+            }catch(_){return "";}
+          };
+          if(path){setArtwork(path);return;}
+          const squarePath=await loadSquareArts();
+          if(squarePath)setArtwork(squarePath);
         }).catch(()=>{});
     }
     if(item.backdrop)setBackdrop(item.backdrop)}
