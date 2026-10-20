@@ -9,6 +9,7 @@ const statusEl = document.querySelector("#status");
 const disconnectBtn = document.querySelector("#disconnectBtn");
 const tautulliUrlInput = document.querySelector("#tautulliUrl");
 const tautulliKeyInput = document.querySelector("#tautulliKey");
+const plexUsersInput = document.querySelector("#plexUsers");
 const plexEnabledInput = document.querySelector("#plexEnabled");
 const plexStatus = document.querySelector("#plexStatus");
 const PLEX_CONFIG_KEY = "nowplaying_plex_config";
@@ -20,12 +21,14 @@ function loadPlexConfig() {
   const config = readPlexConfig();
   tautulliUrlInput.value = config.tautulliUrl || "";
   tautulliKeyInput.value = config.tautulliKey || "";
+  plexUsersInput.value = config.plexUsers || "";
   plexEnabledInput.checked = config.enabled !== false;
 }
 function savePlexConfig() {
   const config = {
     tautulliUrl: tautulliUrlInput.value.trim().replace(/\/$/, ""),
     tautulliKey: tautulliKeyInput.value.trim(),
+    plexUsers: plexUsersInput.value.trim(),
     enabled: plexEnabledInput.checked
   };
   localStorage.setItem(PLEX_CONFIG_KEY, JSON.stringify(config));
