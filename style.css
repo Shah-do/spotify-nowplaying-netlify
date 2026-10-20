@@ -605,3 +605,64 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
     grid-template-columns: minmax(0, .96fr) minmax(0, 1fr) !important;
   }
 }
+
+
+/* Queue lives outside the main player: pin it to the viewport, never inside the card. */
+.display-wrap {
+  height: 100svh !important;
+  min-height: 100svh !important;
+  box-sizing: border-box !important;
+  padding: 76px 24px 88px !important;
+  display: grid !important;
+  place-items: center !important;
+}
+.player, .projector .player {
+  position: relative !important;
+  margin: 0 auto !important;
+}
+.queue-card {
+  position: fixed !important;
+  right: clamp(14px, 2.5vw, 32px) !important;
+  bottom: clamp(14px, 2.5vh, 28px) !important;
+  left: auto !important;
+  top: auto !important;
+  z-index: 20 !important;
+  width: min(340px, calc(100vw - 28px)) !important;
+  max-width: calc(100vw - 28px) !important;
+  margin: 0 !important;
+}
+@media (max-width: 760px) {
+  .display-wrap {
+    height: 100svh !important;
+    min-height: 100svh !important;
+    padding: 76px 14px 96px !important;
+    place-items: center !important;
+  }
+  .player, .projector .player {
+    width: min(100%, 520px) !important;
+    max-height: calc(100svh - 190px) !important;
+    overflow: hidden !important;
+    padding: 18px !important;
+    gap: 16px !important;
+  }
+  .cover { width: min(48vw, 200px) !important; margin: 0 auto !important; }
+  .details { min-height: 0 !important; overflow: hidden !important; }
+  .queue-card {
+    right: 14px !important;
+    bottom: 14px !important;
+    left: 14px !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+}
+@media (min-width: 761px) {
+  .display-wrap {
+    height: 100svh !important;
+    min-height: 100svh !important;
+    padding: 76px 24px 88px !important;
+    place-items: center !important;
+  }
+  .player, .projector .player {
+    width: min(1000px, calc(100vw - 64px), calc((100svh - 164px) * 1.92)) !important;
+  }
+}
