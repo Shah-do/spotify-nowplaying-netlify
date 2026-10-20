@@ -39,6 +39,7 @@
     body.classList.toggle("plex-mode", mode === "plex");
     if (mode !== "idle") $("screensaverCaption").hidden = true;
     if (mode === "spotify") {
+      $("queueCard").hidden = false;
       setSource("spotify");
       $("mediaMeta").hidden = true;
       $("cover").alt = "Album artwork";
