@@ -7,8 +7,8 @@ const SCOPES = ["user-read-currently-playing", "user-read-playback-state", "user
 const clientInput = document.querySelector("#clientId");
 const statusEl = document.querySelector("#status");
 const disconnectBtn = document.querySelector("#disconnectBtn");
-const tautulliUrlInput = document.querySelector("#tautulliUrl");
-const tautulliKeyInput = document.querySelector("#tautulliKey");
+const plexUrlInput = document.querySelector("#plexUrl");
+const plexTokenInput = document.querySelector("#plexToken");
 const plexUsersInput = document.querySelector("#plexUsers");
 const plexEnabledInput = document.querySelector("#plexEnabled");
 const plexStatus = document.querySelector("#plexStatus");
@@ -19,15 +19,15 @@ function readPlexConfig() {
 }
 function loadPlexConfig() {
   const config = readPlexConfig();
-  tautulliUrlInput.value = config.tautulliUrl || "";
-  tautulliKeyInput.value = config.tautulliKey || "";
+  plexUrlInput.value = config.plexUrl || "";
+  plexTokenInput.value = config.plexToken || "";
   plexUsersInput.value = config.plexUsers || "";
   plexEnabledInput.checked = config.enabled !== false;
 }
 function savePlexConfig() {
   const config = {
-    tautulliUrl: tautulliUrlInput.value.trim().replace(/\/$/, ""),
-    tautulliKey: tautulliKeyInput.value.trim(),
+    plexUrl: plexUrlInput.value.trim().replace(/\/$/, ""),
+    plexToken: plexTokenInput.value.trim(),
     plexUsers: plexUsersInput.value.trim(),
     enabled: plexEnabledInput.checked
   };
@@ -42,7 +42,7 @@ document.querySelector("#testPlexBtn").addEventListener("click", async () => {
   const config = savePlexConfig();
   plexStatus.textContent = "Testing Tautulli connection…";
   try {
-    if (!config.tautulliUrl || !config.tautulliKey) throw new Error("Enter both the Tautulli URL and API key.");
+    if (!config.plexUrl || !config.plexToken) throw new Error("Enter both the Plex server URL and token.");
     const url = new URL(config.tautulliUrl + "/api/v2");
     url.search = new URLSearchParams({apikey:config.tautulliKey,cmd:"get_activity"});
     const response = await fetch(url, {cache:"no-store"});
