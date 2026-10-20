@@ -19,7 +19,16 @@
     if(mode==="spotify"){$("queueCard").hidden=false;setSource("spotify");$("mediaMeta").hidden=true;$("cover").alt="Album artwork";$("playPauseBtn").hidden=false;$("nextBtn").hidden=false;$("lyrics").hidden=!$("currentLyric").textContent}
     else if(mode==="plex"){setSource("plex");$("lyrics").hidden=true;$("playPauseBtn").hidden=true;$("nextBtn").hidden=true;$("queueCard").hidden=true;$("mediaMeta").hidden=false}
     else{setSource("");$("queueCard").hidden=true;$("screensaverCaption").hidden=false}}
-  function sessionUsername(el){return [attr(el,"user"),attr(el,"username"),attr(el,"userTitle"),attr(el,"userName")].map(x=>x.trim().toLocaleLowerCase()).filter(Boolean)}
+  function sessionUsername(el){
+    // Plex returns the session owner as a nested <User title="..."> element,
+    // not necessarily as attributes on the <Video> node itself.
+    const userNodes = xmlItems(el, "User");
+    const values = [
+      attr(el, "user"), attr(el, "username"), attr(el, "userTitle"), attr(el, "userName"),
+      ...userNodes.flatMap(user => [attr(user, "title"), attr(user, "username"), attr(user, "name")])
+    ];
+    return values.map(x => x.trim().toLocaleLowerCase()).filter(Boolean);
+  }
   function normalizeSession(el){const type=attr(el,"type").toLowerCase(),state=attr(el,"state").toLowerCase(),title=attr(el,"title")||"Unknown title";const duration=Number(attr(el,"duration")||0),offset=Number(attr(el,"viewOffset")||0);
     const grand=el.getElementsByTagName("grandparentTitle")[0];const director=xmlItems(el,"Director").map(x=>attr(x,"tag")).filter(Boolean);const genres=xmlItems(el,"Genre").map(x=>attr(x,"tag")).filter(Boolean);
     const thumb=attr(el,"thumb"),art=attr(el,"art")||attr(el,"grandparentThumb")||thumb;
@@ -36,7 +45,11 @@
   function rotateScreensaver(force=false){if(!screensaverItems.length||(!force&&Date.now()-lastSaverChange<45000))return;let n=Math.floor(Math.random()*screensaverItems.length);if(screensaverItems.length>1&&n===screensaverIndex)n=(n+1)%screensaverItems.length;screensaverIndex=n;lastSaverChange=Date.now();const item=screensaverItems[n];setBackdrop(item.backdrop);$("screensaverTitle").textContent=item.title||"";$("screensaverYear").textContent=item.year||"";$("screensaverCaption").hidden=false}
   async function pollPlex(){loadConfig();if(!plexEnabled||!plexUrl||!plexToken){lastPlex=null;if(window.currentItem)setMode("spotify");else{setMode("idle");rotateScreensaver()}return}
     try{const r=await plexFetch("/status/sessions");const xml=new DOMParser().parseFromString(await r.text(),"application/xml");const sessions=xmlItems(xml,"Video");
-      const normalized=sessions.filter(s=>["movie","episode"].includes(attr(s,"type").toLowerCase())&&allowedPlexUsers.length&&sessionUsername(s).some(n=>allowedPlexUsers.includes(n))).map(normalizeSession);
+      const normalized=sessions.filter(s=>{
+        const type=attr(s,"type").toLowerCase();
+        return ["movie","episode"].includes(type) && allowedPlexUsers.length>0 &&
+          sessionUsername(s).some(n=>allowedPlexUsers.includes(n));
+      }).map(normalizeSession);
       lastPlex=normalized.find(s=>s.playing)||normalized.find(s=>s.paused)||null;lastStatusCheck=Date.now();if(lastPlex){showPlex(lastPlex);return}
     }catch(_){}
     if(window.currentItem){setMode("spotify");$("queueCard").hidden=false}else{setMode("idle");if(!screensaverItems.length)await loadScreensaver();rotateScreensaver()}}
