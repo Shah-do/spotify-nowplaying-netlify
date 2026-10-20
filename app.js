@@ -24,7 +24,7 @@ function loadPlexConfig() {
 }
 function savePlexConfig() {
   const config = {
-    tautulliUrl: tautulliUrlInput.value.trim().replace(/\\/$/, ""),
+    tautulliUrl: tautulliUrlInput.value.trim().replace(/\/$/, ""),
     tautulliKey: tautulliKeyInput.value.trim(),
     enabled: plexEnabledInput.checked
   };
