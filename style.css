@@ -701,3 +701,12 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
 .display.plex-mode .progress{margin-top:clamp(16px,3vh,32px)!important}
 .display.plex-mode .media-meta{display:block!important}
 @media(max-width:760px){.screensaver-caption{max-width:88vw;bottom:28px}.topbar-actions{gap:12px}.source-badge{width:24px;height:24px}.setup-card{padding:28px 22px!important}}
+
+
+/* Playback source indicator pinned to the top-right with adaptive contrast. */
+.topbar-actions{margin-left:auto;justify-content:flex-end}
+.source-badge{position:fixed!important;top:clamp(22px,4vh,42px)!important;right:clamp(26px,4.2vw,72px)!important;z-index:30!important;width:clamp(27px,3vw,38px)!important;height:clamp(27px,3vw,38px)!important;display:flex;align-items:center;justify-content:center;opacity:1!important;pointer-events:none;filter:brightness(0) invert(1);transition:filter .25s ease,opacity .2s ease}
+.source-badge img{display:block;width:100%;height:100%;object-fit:contain}
+.source-badge.on-light-background{filter:brightness(0)!important}
+.source-badge[hidden]{display:none!important}
+@media(max-width:760px){.source-badge{top:14px!important;right:16px!important;width:25px!important;height:25px!important}}
