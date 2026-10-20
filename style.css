@@ -862,3 +862,27 @@ body.display.plex-mode #cover.cover[src="placeholder.svg"]{object-fit:contain!im
  body.display.plex-mode #cover.cover{width:min(100%,320px)!important;max-height:48svh!important}
  .topbar-actions .source-badge img{width:58px!important;height:58px!important}
 }
+
+
+/* Match the source mark to the Setup control in the supplied reference. */
+.topbar-actions .source-badge{
+  width:52px!important;height:52px!important;min-width:52px!important;flex:0 0 52px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  overflow:visible!important;background:transparent!important;border:0!important;opacity:.78!important;
+}
+.topbar-actions .source-badge img{
+  display:block!important;width:52px!important;height:52px!important;max-width:52px!important;max-height:52px!important;
+  transform:none!important;object-fit:contain!important;opacity:.88!important;
+}
+/* Plex artwork uses the same square, rounded frame as Spotify. JS selects
+   square Plex art first, otherwise swaps in the backdrop for a centered crop. */
+body.display.plex-mode #cover.cover{
+  width:100%!important;height:auto!important;aspect-ratio:1/1!important;
+  object-fit:cover!important;border-radius:12px!important;
+  align-self:center!important;justify-self:stretch!important;margin:0!important;
+  background:transparent!important;
+}
+@media(max-width:760px){
+ .topbar-actions .source-badge{width:42px!important;height:42px!important;min-width:42px!important;flex-basis:42px!important}
+ .topbar-actions .source-badge img{width:42px!important;height:42px!important;max-width:42px!important;max-height:42px!important}
+}
