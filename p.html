@@ -19,6 +19,7 @@
       <div class="controls"><button id="playPauseBtn" class="control primary" aria-label="Pause" title="Play / pause"><span id="playPauseIcon" class="icon-wrap"></span></button><button id="nextBtn" class="control" aria-label="Next track" title="Next track"><span class="icon-wrap" id="nextIcon"></span></button></div>
       <p id="message" class="message" role="status"></p>
     </div>
-    <aside class="queue-card empty" id="queueCard"><img id="queueCover" class="queue-cover" src="placeholder.svg" alt=""><div class="queue-copy"><div class="queue-label">Up next</div><div id="queueTitle" class="queue-title">Checking queue…</div><div id="queueArtist" class="queue-artist">Spotify queue</div></div></aside>
+
   </section>
+  <aside class="queue-card empty" id="queueCard"><img id="queueCover" class="queue-cover" src="placeholder.svg" alt=""><div class="queue-copy"><div class="queue-label">Up next</div><div id="queueTitle" class="queue-title">Checking queue…</div><div id="queueArtist" class="queue-artist">Spotify queue</div></div></aside>
 </main><script src="display.js"></script><script>if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(console.error)); }</script></body></html>
