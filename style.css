@@ -710,3 +710,11 @@ input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid #ffffff2c
 .source-badge.on-light-background{filter:brightness(0)!important}
 .source-badge[hidden]{display:none!important}
 @media(max-width:760px){.source-badge{top:14px!important;right:16px!important;width:25px!important;height:25px!important}}
+
+
+/* Keep the source icon in the top-right, with Setup to its left and a clear gap. */
+.topbar-actions{position:fixed!important;top:clamp(22px,4vh,42px)!important;right:clamp(26px,4.2vw,72px)!important;display:flex!important;flex-direction:row!important;align-items:center!important;gap:18px!important;z-index:31!important;pointer-events:none}
+.topbar-actions .back{order:1!important;position:static!important;pointer-events:auto!important}
+.topbar-actions .source-badge{order:2!important;position:static!important;inset:auto!important;flex:none!important;width:38px!important;height:38px!important;z-index:32!important}
+.source-badge img{width:100%;height:100%;object-fit:contain}
+@media(max-width:760px){.topbar-actions{top:14px!important;right:16px!important;gap:12px!important}.topbar-actions .source-badge{width:25px!important;height:25px!important}}
