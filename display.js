@@ -191,7 +191,7 @@ async function update() {
       currentItem=null; window.currentItem=null; updateControls();
       window.dispatchEvent(new CustomEvent("nowplaying:spotify-state", {detail:{item:null}}));
       $("state") && ($("state").textContent = "SPOTIFY NOW PLAYING");
-      showMessage("Nothing is playing right now. Start playback on Spotify.");
+      showMessage(""); // The Plex/idle display owns the empty state; avoid overwriting its card.
       await updateQueue(); return;
     }
     const item = data.item;
