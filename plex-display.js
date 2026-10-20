@@ -10,9 +10,9 @@
   const spotifyMark = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1ed760"/><path d="M5.2 9.1c4.5-1.4 9.9-.9 13.7 1.4M6 12.1c3.9-1.1 8.5-.7 11.8 1.2M6.8 15c3.1-.8 6.8-.5 9.6 1" fill="none" stroke="#101512" stroke-width="1.7" stroke-linecap="round"/></svg>';
   const plexMark = '<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#e5a00d"/><path d="M9 5h5l5 11-5 11H9l5-11L9 5Zm9 0h5l5 11-5 11h-5l5-11-5-11Z" fill="#171717"/></svg>';
   function readConfig(){try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||"{}")}catch(_){return{}}}
-  function loadConfig(){const c=readConfig();tautulliUrl=(c.tautulliUrl||"").replace(/\\/$/,"");apiKey=c.tautulliKey||"";plexEnabled=c.enabled!==false}
+  function loadConfig(){const c=readConfig();tautulliUrl=(c.tautulliUrl||"").replace(/\/$/,"");apiKey=c.tautulliKey||"";plexEnabled=c.enabled!==false}
   function setSource(source){const badge=$("sourceBadge");if(!badge)return;badge.innerHTML=source==="plex"?plexMark:source==="spotify"?spotifyMark:"";badge.hidden=!source;badge.setAttribute("aria-label",source==="plex"?"Plex playback":"Spotify playback")}
-  function setBackdrop(url){if(!backdrop||!url)return;backdrop.style.backgroundImage='url("'+String(url).replace(/["\\\\]/g,"")+'")';backdrop.classList.add("visible")}
+  function setBackdrop(url){if(!backdrop||!url)return;backdrop.style.backgroundImage='url("'+String(url).replace(/["\\]/g,"") + '")';backdrop.classList.add("visible")}
   function formatMs(ms){const s=Math.max(0,Math.floor(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
   function setMode(mode){
     if(mode===lastMode)return;lastMode=mode;body.classList.toggle("idle",mode==="idle");body.classList.toggle("plex-mode",mode==="plex");
@@ -23,7 +23,7 @@
   }
   function imageUrl(path){
     if(!path)return "";
-    if(/^https?:\\/\\//i.test(path))return path;
+    if(/^https?:\/\//i.test(path))return path;
     if(!tautulliUrl||!apiKey)return "";
     return tautulliUrl+"/image?"+new URLSearchParams({img:path,apikey:apiKey});
   }
