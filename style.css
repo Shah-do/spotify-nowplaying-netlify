@@ -886,3 +886,20 @@ body.display.plex-mode #cover.cover{
  .topbar-actions .source-badge{width:42px!important;height:42px!important;min-width:42px!important;flex-basis:42px!important}
  .topbar-actions .source-badge img{width:42px!important;height:42px!important;max-width:42px!important;max-height:42px!important}
 }
+
+
+/* Display mode: no Setup control; show only the active source mark. */
+body.display .topbar .back{display:none!important}
+body.display .topbar-actions{position:fixed!important;top:clamp(22px,4vh,42px)!important;right:clamp(26px,4.2vw,72px)!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:0!important;z-index:30!important;pointer-events:none!important}
+body.display .topbar-actions .source-badge{
+ width:42px!important;height:42px!important;min-width:42px!important;flex:0 0 42px!important;
+ padding:0!important;margin:0!important;border:0!important;background:transparent!important;
+ border-radius:0!important;box-shadow:none!important;overflow:visible!important;opacity:.62!important;
+}
+body.display .topbar-actions .source-badge img{
+ display:block!important;width:42px!important;height:42px!important;max-width:42px!important;max-height:42px!important;
+ object-fit:contain!important;opacity:.7!important;transform:none!important;
+}
+body.display .topbar-actions .source-badge.on-light-background img{filter:brightness(0)!important}
+body.display .topbar-actions .source-badge:not(.on-light-background) img{filter:brightness(0) invert(1)!important}
+body.display .topbar-actions .source-badge[hidden]{display:none!important}
