@@ -6,7 +6,7 @@
   let lastMode="", plexItemKey="", screensaverItems=[], screensaverIndex=-1, lastSaverChange=0, lastStatusCheck=0, lastPlex=null, saverBusy=false;
   const spotifyMark='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1ed760"/><path d="M5.2 9.1c4.5-1.4 9.9-.9 13.7 1.4M6 12.1c3.9-1.1 8.5-.7 11.8 1.2M6.8 15c3.1-.8 6.8-.5 9.6 1" fill="none" stroke="#101512" stroke-width="1.7" stroke-linecap="round"/></svg>';
   const plexMark='<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#e5a00d"/><path d="M9 5h5l5 11-5 11H9l5-11L9 5Zm9 0h5l5 11-5 11h-5l5-11-5-11Z" fill="#171717"/></svg>';
-  function loadConfig(){let c={};try{c=JSON.parse(localStorage.getItem(CONFIG_KEY)||"{}")}catch(_){}plexUrl=(c.plexUrl||"").replace(/\/$/,"");plexToken=c.plexToken||"";plexEnabled=c.enabled!==false;allowedPlexUsers=(c.plexUsers||"").split(",").map(x=>x.trim().toLocaleLowerCase()).filter(Boolean)}
+  function loadConfig(){let c={};try{c=JSON.parse(localStorage.getItem(CONFIG_KEY)||"{}")}catch(_){}plexUrl=(c.plexUrl||"").replace(/\/$/,"");plexToken=c.plexToken||"";plexEnabled=c.enabled!==false;allowedPlexUsers=(c.plexUsers||"").split(",").map(canonicalUsername).filter(Boolean)}
   function apiUrl(path,params={}){const u=new URL(plexUrl+path);u.search=new URLSearchParams({...params,"X-Plex-Token":plexToken});return u.toString()}
   async function plexFetch(path,params={},accept="application/xml"){if(!plexUrl||!plexToken)throw new Error("Configure Plex server URL and token in setup.");const r=await fetch(apiUrl(path,params),{cache:"no-store",headers:{Accept:accept}});if(!r.ok)throw new Error("Plex HTTP "+r.status);return r}
   function xmlItems(xml,tag){return Array.from(xml.getElementsByTagName(tag))}
@@ -19,15 +19,18 @@
     if(mode==="spotify"){$("queueCard").hidden=false;setSource("spotify");$("mediaMeta").hidden=true;$("cover").alt="Album artwork";$("playPauseBtn").hidden=false;$("nextBtn").hidden=false;$("lyrics").hidden=!$("currentLyric").textContent}
     else if(mode==="plex"){setSource("plex");$("lyrics").hidden=true;$("playPauseBtn").hidden=true;$("nextBtn").hidden=true;$("queueCard").hidden=true;$("mediaMeta").hidden=false}
     else{setSource("");$("queueCard").hidden=true;$("screensaverCaption").hidden=false}}
+  function canonicalUsername(value){
+    // Plex may expose the account username in one place and the profile title
+    // (which can contain spaces) in another. Normalize punctuation/spacing.
+    return String(value || "").normalize("NFKC").toLocaleLowerCase().replace(/[^a-z0-9]/g, "");
+  }
   function sessionUsername(el){
-    // Plex returns the session owner as a nested <User title="..."> element,
-    // not necessarily as attributes on the <Video> node itself.
     const userNodes = xmlItems(el, "User");
     const values = [
       attr(el, "user"), attr(el, "username"), attr(el, "userTitle"), attr(el, "userName"),
       ...userNodes.flatMap(user => [attr(user, "title"), attr(user, "username"), attr(user, "name")])
     ];
-    return values.map(x => x.trim().toLocaleLowerCase()).filter(Boolean);
+    return values.map(canonicalUsername).filter(Boolean);
   }
   function normalizeSession(el){const type=attr(el,"type").toLowerCase(),state=attr(el,"state").toLowerCase(),title=attr(el,"title")||"Unknown title";const duration=Number(attr(el,"duration")||0),offset=Number(attr(el,"viewOffset")||0);
     const grand=el.getElementsByTagName("grandparentTitle")[0];const director=xmlItems(el,"Director").map(x=>attr(x,"tag")).filter(Boolean);const genres=xmlItems(el,"Genre").map(x=>attr(x,"tag")).filter(Boolean);
