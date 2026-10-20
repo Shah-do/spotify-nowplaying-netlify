@@ -7,7 +7,61 @@ const SCOPES = ["user-read-currently-playing", "user-read-playback-state", "user
 const clientInput = document.querySelector("#clientId");
 const statusEl = document.querySelector("#status");
 const disconnectBtn = document.querySelector("#disconnectBtn");
+const bridgeInput = document.querySelector("#bridgeUrl");
+const tautulliUrlInput = document.querySelector("#tautulliUrl");
+const tautulliKeyInput = document.querySelector("#tautulliKey");
+const plexEnabledInput = document.querySelector("#plexEnabled");
+const plexStatus = document.querySelector("#plexStatus");
+const PLEX_CONFIG_KEY = "nowplaying_plex_config";
 clientInput.value = localStorage.getItem(CLIENT_KEY) || "";
+function readPlexConfig() {
+  try { return JSON.parse(localStorage.getItem(PLEX_CONFIG_KEY) || "{}"); } catch (_) { return {}; }
+}
+function loadPlexConfig() {
+  const config = readPlexConfig();
+  bridgeInput.value = config.bridgeUrl || "";
+  tautulliUrlInput.value = config.tautulliUrl || "";
+  tautulliKeyInput.value = config.tautulliKey || "";
+  plexEnabledInput.checked = config.enabled !== false;
+}
+function savePlexConfig() {
+  const config = {
+    bridgeUrl: bridgeInput.value.trim().replace(/\\/$/, ""),
+    tautulliUrl: tautulliUrlInput.value.trim().replace(/\\/$/, ""),
+    tautulliKey: tautulliKeyInput.value.trim(),
+    enabled: plexEnabledInput.checked
+  };
+  localStorage.setItem(PLEX_CONFIG_KEY, JSON.stringify(config));
+  plexStatus.textContent = "Plex settings saved in this browser only.";
+  return config;
+}
+loadPlexConfig();
+document.querySelector("#savePlexBtn").addEventListener("click", savePlexConfig);
+plexEnabledInput.addEventListener("change", savePlexConfig);
+document.querySelector("#testPlexBtn").addEventListener("click", async () => {
+  const config = savePlexConfig();
+  plexStatus.textContent = "Testing connection…";
+  try {
+    if (config.bridgeUrl) {
+      const response = await fetch(`${config.bridgeUrl}/health`, {cache:"no-store"});
+      if (!response.ok) throw new Error(`Bridge returned HTTP ${response.status}`);
+      const data = await response.json();
+      if (!data.ok) throw new Error(data.error || "Bridge health check failed");
+      plexStatus.textContent = data.configured === false ? "Bridge responds, but its Tautulli settings are not configured." : "Bridge connection successful.";
+      return;
+    }
+    if (!config.tautulliUrl || !config.tautulliKey) throw new Error("Enter a bridge URL, or expand Advanced and enter both Tautulli fields.");
+    const url = new URL(config.tautulliUrl + "/api/v2");
+    url.search = new URLSearchParams({apikey:config.tautulliKey,cmd:"get_activity"});
+    const response = await fetch(url, {cache:"no-store"});
+    if (!response.ok) throw new Error(`Tautulli returned HTTP ${response.status}`);
+    const data = await response.json();
+    if (data?.response?.result !== "success") throw new Error(data?.response?.message || "Tautulli API rejected the request");
+    plexStatus.textContent = "Direct Tautulli connection successful. Browser CORS is enabled; use a private bridge for safer playback integration.";
+  } catch (error) {
+    plexStatus.textContent = `Connection failed: ${error.message}`;
+  }
+});
 
 function b64url(bytes) {
   return btoa(String.fromCharCode(...new Uint8Array(bytes)))
