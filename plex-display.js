@@ -82,8 +82,32 @@
     if(item.backdrop)setBackdrop(item.backdrop)}
     $("bar").style.width=item.duration?Math.min(100,item.offset/item.duration*100)+"%":"0%";$("elapsed").textContent=formatMs(item.offset);$("duration").textContent=formatMs(item.duration);$("message").textContent=item.paused?"Paused on Plex":""}
   async function loadScreensaver(){if(!plexUrl||!plexToken||saverBusy)return;saverBusy=true;try{
-    const r=await plexFetch("/library/recentlyAdded",{type:"1", "X-Plex-Container-Start":"0","X-Plex-Container-Size":"30"});const xml=new DOMParser().parseFromString(await r.text(),"application/xml");const items=[];
-    for(const m of xmlItems(xml,"Video")){const art=attr(m,"art")||attr(m,"thumb");if(art)items.push({title:attr(m,"title"),year:attr(m,"year"),backdrop:imageUrl(art)})}if(items.length)screensaverItems=items;
+    // Build the screensaver pool from every movie library, not just recently added.
+    const sectionsResponse=await plexFetch("/library/sections");
+    const sectionsXml=new DOMParser().parseFromString(await sectionsResponse.text(),"application/xml");
+    const sections=xmlItems(sectionsXml,"Directory").filter(section=>attr(section,"type")==="movie"&&attr(section,"key"));
+    const items=[];
+    for(const section of sections){
+      const sectionKey=attr(section,"key");
+      let start=0,total=Infinity;
+      while(start<total){
+        const response=await plexFetch("/library/sections/"+encodeURIComponent(sectionKey)+"/all",{
+          type:"1","X-Plex-Container-Start":String(start),"X-Plex-Container-Size":"200"
+        });
+        const xml=new DOMParser().parseFromString(await response.text(),"application/xml");
+        const container=xml.documentElement;
+        const reportedTotal=Number(attr(container,"totalSize"));
+        if(Number.isFinite(reportedTotal)&&reportedTotal>=0)total=reportedTotal;
+        const batch=xmlItems(xml,"Video");
+        for(const m of batch){
+          const art=attr(m,"art")||attr(m,"thumb");
+          if(art)items.push({title:attr(m,"title"),year:attr(m,"year"),backdrop:imageUrl(art)});
+        }
+        if(!batch.length)break;
+        start+=batch.length;
+      }
+    }
+    if(items.length)screensaverItems=items;
   }catch(_){}finally{saverBusy=false}}
   function rotateScreensaver(force=false){if(!screensaverItems.length||(!force&&Date.now()-lastSaverChange<45000))return;let n=Math.floor(Math.random()*screensaverItems.length);if(screensaverItems.length>1&&n===screensaverIndex)n=(n+1)%screensaverItems.length;screensaverIndex=n;lastSaverChange=Date.now();const item=screensaverItems[n];setBackdrop(item.backdrop);$("screensaverTitle").textContent=item.title||"";$("screensaverYear").textContent=item.year||"";$("screensaverCaption").hidden=false}
   async function pollPlex(){loadConfig();if(!plexEnabled||!plexUrl||!plexToken){lastPlex=null;if(window.currentItem)setMode("spotify");else{const enteringIdle=lastMode!=="idle";setMode("idle");rotateScreensaver(enteringIdle)}return}
