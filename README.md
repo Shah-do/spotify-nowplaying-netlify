@@ -46,6 +46,19 @@ Spotify requires the exact deployed URL as an allowed Redirect URI, so deploy th
 3. Add the deployed site root including the project path and trailing slash (for example `https://YOUR-USERNAME.github.io/spotify-nowplaying-netlify/`) as a Redirect URI in Spotify Developer Dashboard.
 4. Paste your Client ID into the site and authorize.
 
+## Build, environment variables, and local development
+
+This repository is a **static, browser-only app**. The server-side environment-variable setup used by apps with a backend or Netlify Functions does **not** apply to this project.
+
+- **Required environment variables:** none. Do not create `SPOTIFY_CLIENT_SECRET` or `SPOTIFY_REFRESH_TOKEN`; this app uses Spotify Authorization Code with PKCE in the browser and obtains/stores its tokens through the authorization flow. The only Spotify value you enter into the setup page is the **Client ID**.
+- **Netlify environment settings:** no Spotify variables need to be added under **Site configuration / Site settings → Environment variables** (menu wording may vary). Do not put a client secret or refresh token in `netlify.toml`.
+- **Build command:** none. There is no framework build step or `npm run build` script.
+- **Publish directory:** the repository/project root (`.`), where `index.html`, `app.js`, and `style.css` are located.
+- **Functions directory:** none. The project does not use Netlify Serverless Functions; Spotify API calls and PKCE token exchange happen in the browser.
+- **Local prerequisites:** Node.js is not required just to use the app or deploy the static files. If you want a local HTTP server for testing, any simple static file server will work; no `npm install`, `.env`, or `netlify dev` setup is required for the current architecture.
+
+If the app is later redesigned to use a server-side token exchange or Netlify Functions, its architecture and setup instructions must be updated together. Never add a Spotify client secret to browser code or commit real tokens to GitHub.
+
 ## Spotify-only mode
 
 Plex is optional and disabled by default. Connect Spotify and launch Desktop or Projector mode; you do not need to fill in any Plex fields.
