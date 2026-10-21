@@ -2,6 +2,13 @@
 
 A browser-only Spotify now-playing display with optional Plex integration. It uses Spotify Authorization Code with PKCE; no Spotify client secret or always-on backend is required.
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/26254166-99de-46bf-86a8-841dc75c4e44" alt="NowPlaying showing Plex episode playback" width="49%" />
+  <img src="https://github.com/user-attachments/assets/25016144-2631-4dd2-a54e-d9d2167b8201" alt="NowPlaying artist screensaver" width="49%" />
+  <img src="https://github.com/user-attachments/assets/5b8b1617-a3cb-4d42-9021-fcc06355693c" alt="NowPlaying showing Spotify playback and lyrics" width="49%" />
+  <img src="https://github.com/user-attachments/assets/bfdc6916-8c10-42ff-958b-b0f404b222d0" alt="NowPlaying Plex movie screensaver" width="49%" />
+</p>
+
 ## Don't want to build or deploy it yourself?
 
 **Use the hosted version:** https://shah-do.github.io/spotify-nowplaying-netlify/
