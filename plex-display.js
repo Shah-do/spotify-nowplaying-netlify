@@ -2,11 +2,11 @@
   const $ = id => document.getElementById(id);
   const CONFIG_KEY = "nowplaying_plex_config";
   const backdrop = $("artistBackdrop"), body = document.body;
-  let plexUrl="", plexToken="", plexEnabled=true, allowedPlexUsers=[];
+  let plexUrl="", plexToken="", plexEnabled=false, allowedPlexUsers=[];
   let lastMode="", plexItemKey="", screensaverItems=[], screensaverIndex=-1, lastSaverChange=0, lastStatusCheck=0, lastPlex=null, saverBusy=false;
   const spotifyMark='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1ed760"/><path d="M5.2 9.1c4.5-1.4 9.9-.9 13.7 1.4M6 12.1c3.9-1.1 8.5-.7 11.8 1.2M6.8 15c3.1-.8 6.8-.5 9.6 1" fill="none" stroke="#101512" stroke-width="1.7" stroke-linecap="round"/></svg>';
   const plexMark='<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#e5a00d"/><path d="M9 5h5l5 11-5 11H9l5-11L9 5Zm9 0h5l5 11-5 11h-5l5-11-5-11Z" fill="#171717"/></svg>';
-  function loadConfig(){let c={};try{c=JSON.parse(localStorage.getItem(CONFIG_KEY)||"{}")}catch(_){}plexUrl=(c.plexUrl||"").replace(/\/$/,"");plexToken=c.plexToken||"";plexEnabled=c.enabled!==false;allowedPlexUsers=(c.plexUsers||"").split(",").map(canonicalUsername).filter(Boolean)}
+  function loadConfig(){let c={};try{c=JSON.parse(localStorage.getItem(CONFIG_KEY)||"{}")}catch(_){}plexUrl=(c.plexUrl||"").replace(/\/$/,"");plexToken=c.plexToken||"";plexEnabled=c.enabled===true;allowedPlexUsers=(c.plexUsers||"").split(",").map(canonicalUsername).filter(Boolean)}
   function apiUrl(path,params={}){const u=new URL(plexUrl+path);u.search=new URLSearchParams({...params,"X-Plex-Token":plexToken});return u.toString()}
   async function plexFetch(path,params={},accept="application/xml"){if(!plexUrl||!plexToken)throw new Error("Configure Plex server URL and token in setup.");const r=await fetch(apiUrl(path,params),{cache:"no-store",headers:{Accept:accept}});if(!r.ok)throw new Error("Plex HTTP "+r.status);return r}
   function xmlItems(xml,tag){return Array.from(xml.getElementsByTagName(tag))}
@@ -81,6 +81,23 @@
     }
     if(item.backdrop)setBackdrop(item.backdrop)}
     $("bar").style.width=item.duration?Math.min(100,item.offset/item.duration*100)+"%":"0%";$("elapsed").textContent=formatMs(item.offset);$("duration").textContent=formatMs(item.duration);$("message").textContent=item.paused?"Paused on Plex":""}
+  let spotifyArtistSaverItems=[], spotifyArtistSaverBusy=false, spotifyArtistSaverLoaded=false;
+  async function spotifyToken(){
+    let token=localStorage.getItem("spotify_access_token")||"",expires=Number(localStorage.getItem("spotify_expires_at")||0);
+    if(token&&Date.now()<expires-60000)return token;
+    const refresh=localStorage.getItem("spotify_refresh_token"),clientId=localStorage.getItem("spotify_nowplaying_client_id");
+    if(!refresh||!clientId)return "";
+    try{const r=await fetch("https://accounts.spotify.com/api/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({client_id:clientId,grant_type:"refresh_token",refresh_token:refresh})});if(!r.ok)return "";const d=await r.json();if(!d.access_token)return "";localStorage.setItem("spotify_access_token",d.access_token);localStorage.setItem("spotify_expires_at",String(Date.now()+d.expires_in*1000));if(d.refresh_token)localStorage.setItem("spotify_refresh_token",d.refresh_token);return d.access_token;}catch(_){return ""}
+  }
+  async function spotifyGet(path,token){const r=await fetch("https://api.spotify.com/v1"+path,{headers:{Authorization:"Bearer "+token}});if(!r.ok)throw new Error("Spotify API "+r.status);return r.json()}
+  async function commonsArtistImage(name){try{const q=encodeURIComponent('"'+name+'" musician');const url="https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch="+q+"&gsrnamespace=6&gsrlimit=8&prop=imageinfo&iiprop=url&iiurlwidth=1600&format=json&origin=*";const r=await fetch(url);if(!r.ok)return "";const data=await r.json(),pages=Object.values(data.query?.pages||{});const exact=pages.find(p=>p.imageinfo?.[0]?.thumburl&&/\\.(jpe?g|png|webp)$/i.test(p.title||""));return exact?.imageinfo?.[0]?.thumburl||""}catch(_){return ""}}
+  async function loadSpotifyArtistScreensaver(){
+    if(spotifyArtistSaverBusy||spotifyArtistSaverLoaded)return;spotifyArtistSaverBusy=true;
+    try{const token=await spotifyToken();if(!token)return;const list=await spotifyGet("/me/playlists?limit=50",token);const candidates=(list.items||[]).filter(p=>p?.id).slice(0,8),names=new Map();
+      for(const playlist of candidates){try{const data=await spotifyGet("/playlists/"+encodeURIComponent(playlist.id)+"/items?limit=50",token);for(const row of(data.items||[])){const track=row?.item||row?.track;for(const a of(track?.artists||[]))if(a?.name&&!names.has(a.name.toLowerCase()))names.set(a.name.toLowerCase(),a.name);if(names.size>=24)break}}catch(_){}if(names.size>=24)break}
+      const selected=[...names.values()].sort(()=>Math.random()-.5).slice(0,12),items=[];for(const name of selected){const image=await commonsArtistImage(name);if(image)items.push({title:name,year:"",backdrop:image})}if(items.length)spotifyArtistSaverItems=items;spotifyArtistSaverLoaded=true;
+    }catch(_){}finally{spotifyArtistSaverBusy=false}
+  }
   async function loadScreensaver(){if(!plexUrl||!plexToken||saverBusy)return;saverBusy=true;try{
     // Build the screensaver pool from every movie library, not just recently added.
     const sectionsResponse=await plexFetch("/library/sections");
@@ -110,7 +127,7 @@
     if(items.length)screensaverItems=items;
   }catch(_){}finally{saverBusy=false}}
   function rotateScreensaver(force=false){if(!screensaverItems.length||(!force&&Date.now()-lastSaverChange<45000))return;let n=Math.floor(Math.random()*screensaverItems.length);if(screensaverItems.length>1&&n===screensaverIndex)n=(n+1)%screensaverItems.length;screensaverIndex=n;lastSaverChange=Date.now();const item=screensaverItems[n];setBackdrop(item.backdrop);$("screensaverTitle").textContent=item.title||"";$("screensaverYear").textContent=item.year||"";$("screensaverCaption").hidden=false}
-  async function pollPlex(){loadConfig();if(!plexEnabled||!plexUrl||!plexToken){lastPlex=null;if(window.currentItem)setMode("spotify");else{const enteringIdle=lastMode!=="idle";setMode("idle");rotateScreensaver(enteringIdle)}return}
+  async function pollPlex(){loadConfig();if(!plexEnabled||!plexUrl||!plexToken){lastPlex=null;if(window.currentItem)setMode("spotify");else{const enteringIdle=lastMode!=="idle";setMode("idle");if(screensaverItems.length)rotateScreensaver(enteringIdle);else{await loadSpotifyArtistScreensaver();if(spotifyArtistSaverItems.length){const pool=screensaverItems;screensaverItems=spotifyArtistSaverItems;rotateScreensaver(enteringIdle);screensaverItems=pool}else{backdrop.style.backgroundImage="none";backdrop.classList.remove("visible");$("screensaverCaption").hidden=true}}}return}
     try{const r=await plexFetch("/status/sessions");const xml=new DOMParser().parseFromString(await r.text(),"application/xml");const sessions=xmlItems(xml,"Video");
       const normalized=sessions.filter(s=>{
         const type=attr(s,"type").toLowerCase();
@@ -119,7 +136,7 @@
       }).map(normalizeSession);
       lastPlex=normalized.find(s=>s.playing)||normalized.find(s=>s.paused)||null;lastStatusCheck=Date.now();if(lastPlex){showPlex(lastPlex);return}
     }catch(_){}
-    if(window.currentItem){setMode("spotify");$("queueCard").hidden=false}else{const enteringIdle=lastMode!=="idle";setMode("idle");if(!screensaverItems.length)await loadScreensaver();rotateScreensaver(enteringIdle)}}
+    if(window.currentItem){setMode("spotify");$("queueCard").hidden=false}else{const enteringIdle=lastMode!=="idle";setMode("idle");if(!screensaverItems.length&&plexEnabled&&plexUrl&&plexToken)await loadScreensaver();if(screensaverItems.length)rotateScreensaver(enteringIdle);else{await loadSpotifyArtistScreensaver();if(spotifyArtistSaverItems.length){const pool=screensaverItems;screensaverItems=spotifyArtistSaverItems;rotateScreensaver(enteringIdle);screensaverItems=pool}else{backdrop.style.backgroundImage="none";backdrop.classList.remove("visible");$("screensaverCaption").hidden=true}}}}
   window.addEventListener("nowplaying:spotify-state",e=>{window.currentItem=e.detail?.item||null;if(!lastPlex){if(window.currentItem)setMode("spotify");else{const enteringIdle=lastMode!=="idle";setMode("idle");rotateScreensaver(enteringIdle)}}});
   loadConfig();if(!plexEnabled||!plexUrl||!plexToken)setSource("spotify");pollPlex();setInterval(pollPlex,5000);
   setInterval(()=>{if(lastMode==="idle")rotateScreensaver();if(lastMode==="plex"&&lastPlex&&!lastPlex.paused&&lastPlex.duration){const elapsed=Math.min(lastPlex.duration,Number(lastPlex.offset||0)+(Date.now()-lastStatusCheck));$("bar").style.width=elapsed/lastPlex.duration*100+"%";$("elapsed").textContent=formatMs(elapsed)}},1000);
