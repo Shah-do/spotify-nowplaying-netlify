@@ -67,6 +67,9 @@ When Spotify is idle, the display can build a small artist list from playlists a
 
 Artist portraits need Spotify playlist permission. If you connected Spotify before this feature was added, disconnect and reconnect once to enable the artist screensaver.
 
+
+If Spotify or Plex playback stays paused for **2 minutes**, the display returns to the available idle screensaver. Resuming playback brings the playback display back.
+
 ## Optional Plex setup
 
 1. Open Plex Web while signed in to the account that can access your server.
