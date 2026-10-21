@@ -9,7 +9,7 @@
 <main class="launch-card setup-card">
   <p class="eyebrow">YOUR PERSONAL MUSIC DISPLAY</p>
   <h1>NowPlaying<span>.</span></h1>
-  <p class="subtitle">A calm, cinematic display for Spotify and Plex.</p>
+  <p class="subtitle">A calm, cinematic Spotify display. Plex is optional.</p>
 
   <section class="setup-section">
     <h2>Spotify</h2>
@@ -21,22 +21,22 @@
   <section class="setup-section">
     <h2>Plex integration</h2>
     <p class="hint">Connect directly to your Plex Media Server. No Tautulli, NowPlaying server, or extra Docker container is needed. Your Plex server must allow browser requests from this website (CORS).</p>
-    <details class="direct-settings" open>
+    <details class="direct-settings">
       <summary>Plex server connection</summary>
-      <p class="hint security-note">Your Plex URL and token are saved only in this browser and are never committed to GitHub. Because this is a browser-only app, the token is visible to this browser and is not a server-side secret.</p>
+      <p class="hint security-note">Your Plex URL and token are saved in this browser profile, not in GitHub. Anyone or any script with access to this browser profile can potentially read them. Use a limited, trusted Plex account/token where possible.</p>
       <label class="client-label" for="plexUrl">Plex server URL</label>
       <input id="plexUrl" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="https://your-plex-server.example.com">
       <label class="client-label" for="plexToken">Plex token</label>
       <input id="plexToken" type="password" autocomplete="new-password" spellcheck="false" placeholder="Paste your Plex token">
       <label class="client-label" for="plexUsers">Plex usernames to show <span class="optional">comma-separated</span></label>
-      <input id="plexUsers" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. yaman, familyaccount">
+      <input id="plexUsers" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. your-plex-user, family-account">
       <p class="hint">Only playback sessions matching these usernames will be shown. Leave blank to show no Plex sessions.</p>
     </details>
     <div class="settings-actions">
       <button id="savePlexBtn" class="secondary">Save Plex settings</button>
       <button id="testPlexBtn" class="secondary">Test connection</button>
     </div>
-    <label class="toggle-row"><input id="plexEnabled" type="checkbox" checked> Enable Plex display and screensaver</label>
+    <label class="toggle-row"><input id="plexEnabled" type="checkbox" checked> Enable Plex playback and movie screensaver</label>
     <p id="plexStatus" role="status" class="status"></p>
   </section>
 
@@ -46,7 +46,7 @@
   </div>
   <p id="status" role="status" class="status"></p>
   <button id="disconnectBtn" class="link-button" hidden>Disconnect Spotify on this browser</button>
-  <p class="footer">Spotify lyrics use LRCLIB when available. Plex playback is read-only.</p>
+  <p class="footer">Spotify lyrics use LRCLIB when available. Plex is optional and read-only. Spotify-only mode can rotate artist portraits when available.</p>
 </main>
 <script src="app.js"></script>
 <script>if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(console.error)); }</script></body>
