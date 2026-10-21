@@ -1,4 +1,4 @@
-const CACHE_NAME = "nowplaying-shell-v32";
+const CACHE_NAME = "nowplaying-shell-v33";
 const APP_SHELL = [
   "./",
   "./index.html",
