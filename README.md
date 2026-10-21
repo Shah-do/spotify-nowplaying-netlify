@@ -35,7 +35,7 @@ Plex is optional and disabled by default. Connect Spotify and launch Desktop or 
 
 When Spotify is idle, the display can build a small artist list from playlists available to your account and show matching public portraits from Wikimedia Commons. This requires the `playlist-read-private` permission. Playlist access may be limited by Spotify's API rules; inaccessible playlists and unavailable portraits are skipped. If no portraits are found, the screen stays black with the clock.
 
-If you already authorized Spotify before this feature was added, disconnect and reconnect Spotify to grant the new playlist permission.
+Artist portraits need Spotify playlist permission. If you connected Spotify before this feature was added, disconnect and reconnect once to enable the artist screensaver.
 
 ## Optional Plex setup
 
