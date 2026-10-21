@@ -9,7 +9,7 @@ A browser-only Spotify now-playing display with optional Plex integration. It us
 1. Open the hosted link and enter your Spotify app's **Client ID**. If you don't have one, create an app at https://developer.spotify.com/dashboard.
 2. In your Spotify app settings, add this exact Redirect URI:
    `https://shah-do.github.io/spotify-nowplaying-netlify/`
-3. Save the Spotify app settings, return to the hosted NowPlaying page, and choose **Desktop mode** or **Projector mode**.
+3. Save the Spotify app settings, return to the hosted NowPlaying page, and click **Now Playing**.
 4. Approve the requested Spotify permissions. Plex is optional; leave it disabled if you only want Spotify.
 5. If you connected Spotify before artist portraits were added, disconnect and reconnect once to grant playlist access for the screensaver.
 
@@ -31,7 +31,7 @@ Spotify requires the exact deployed URL as an allowed Redirect URI, so deploy th
 4. Copy the deployed HTTPS URL, for example `https://your-site.netlify.app/`.
 5. Open https://developer.spotify.com/dashboard, create a Spotify app, and copy its **Client ID**.
 6. In that Spotify app's settings, add the exact deployed URL as a Redirect URI, including the trailing slash, and save it.
-7. Open your deployed site, paste the Client ID, then choose **Desktop mode** or **Projector mode** and approve the requested permissions.
+7. Open your deployed site, paste the Client ID, then click **Now Playing** and approve the requested permissions.
 
 ### Option B — Cloudflare Pages
 
@@ -61,7 +61,7 @@ If the app is later redesigned to use a server-side token exchange or Netlify Fu
 
 ## Spotify-only mode
 
-Plex is optional and disabled by default. Connect Spotify and launch Desktop or Projector mode; you do not need to fill in any Plex fields.
+Plex is optional and disabled by default. Connect Spotify and click **Now Playing**; you do not need to fill in any Plex fields.
 
 When Spotify is idle, the display can build a small artist list from playlists available to your account and show matching public portraits from Wikimedia Commons. This requires the `playlist-read-private` permission. Playlist access may be limited by Spotify's API rules; inaccessible playlists and unavailable portraits are skipped. If no portraits are found, the screen stays black with the clock.
 
@@ -74,7 +74,7 @@ Artist portraits need Spotify playlist permission. If you connected Spotify befo
 3. In NowPlaying setup, expand **Plex server connection**.
 4. Enter your Plex server's reachable HTTPS URL, the token, and the exact Plex usernames allowed to appear. Use comma-separated usernames if needed.
 5. Turn on **Enable Plex playback and movie screensaver**, save, and use **Test connection**. The browser must be able to reach Plex and the server must permit cross-origin browser requests (CORS).
-6. Launch Desktop or Projector mode. When Plex is enabled and configured, current Plex playback and the full-library movie-art screensaver remain the primary Plex behavior.
+6. Click **Now Playing**. When Plex is enabled and configured, current Plex playback and the full-library movie-art screensaver remain the primary Plex behavior.
 
 ## Privacy and security
 
