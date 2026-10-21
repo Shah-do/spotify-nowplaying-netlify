@@ -907,3 +907,44 @@ body.display .topbar-actions .source-badge[hidden]{display:none!important}
 
 /* Up Next is a Spotify queue concept; keep it hidden during Plex playback. */
 body.display.plex-mode #queueCard{display:none!important}
+
+/* Distinct presentation modes: desktop is compact and information-forward;
+   projector is deliberately larger, cleaner, and readable from a distance. */
+@media (min-width: 761px) {
+  body.display.desktop .player {
+    width: min(1040px, calc(100vw - 96px)) !important;
+    grid-template-columns: minmax(220px, 34%) minmax(0, 1fr) !important;
+    gap: clamp(26px, 3.2vw, 44px) !important;
+    padding: clamp(24px, 3vw, 38px) !important;
+    border-radius: 22px !important;
+  }
+  body.display.desktop .cover { max-width: 360px !important; border-radius: 14px !important; }
+  body.display.desktop .details h1 { font-size: clamp(2rem, 3.2vw, 3.3rem) !important; }
+  body.display.desktop .lyrics { margin: 12px 0 18px !important; }
+  body.display.desktop .queue-card { width: min(280px, calc(100vw - 36px)) !important; }
+
+  body.display.projector .display-wrap { padding: 40px !important; }
+  body.display.projector .player {
+    width: min(1480px, calc(100vw - 100px), calc((100svh - 140px) * 1.95)) !important;
+    max-width: 1480px !important;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr) !important;
+    gap: clamp(42px, 5vw, 88px) !important;
+    padding: clamp(38px, 5vw, 76px) !important;
+    border-radius: 32px !important;
+    background: rgba(10, 13, 18, .46) !important;
+  }
+  body.display.projector .cover { max-width: 520px !important; border-radius: 18px !important; }
+  body.display.projector .details h1 { font-size: clamp(2.8rem, 5vw, 5.8rem) !important; line-height: 1.02 !important; }
+  body.display.projector .artist { font-size: clamp(1.3rem, 2.2vw, 2rem) !important; }
+  body.display.projector .lyric { font-size: clamp(1.2rem, 2vw, 2rem) !important; }
+  body.display.projector .current { font-size: clamp(1.5rem, 2.6vw, 2.5rem) !important; }
+  body.display.projector .progress { height: 9px !important; }
+  body.display.projector .control { width: 58px !important; height: 58px !important; }
+  body.display.projector .queue-card { width: min(320px, 30vw) !important; }
+}
+@media (max-width: 760px) {
+  body.display.projector .player { gap: 28px !important; padding: 28px !important; }
+  body.display.projector .cover { width: min(72vw, 340px) !important; }
+  body.display.projector .details h1 { font-size: clamp(2.2rem, 9vw, 3.2rem) !important; }
+  body.display.desktop .player { padding: 18px !important; gap: 18px !important; }
+}
