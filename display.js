@@ -196,7 +196,7 @@ async function update() {
     }
     const item = data.item;
     currentItem=item; window.currentItem=item;
-    window.dispatchEvent(new CustomEvent("nowplaying:spotify-state", {detail:{item}}));
+    window.dispatchEvent(new CustomEvent("nowplaying:spotify-state", {detail:{item, paused:!data.is_playing}}));
     // Spotify's progress_ms is a snapshot from the API response. Start the
     // local clock immediately, before any slow lyrics/artist-image requests.
     progressMs = data.progress_ms || 0;
