@@ -2,7 +2,7 @@
 const CLIENT_KEY = "spotify_nowplaying_client_id";
 const BASE_PATH = location.pathname.startsWith("/spotify-nowplaying-netlify/") ? "/spotify-nowplaying-netlify/" : "/";
 const REDIRECT_URI = `${location.origin}${BASE_PATH}`;
-const SCOPES = ["user-read-currently-playing", "user-read-playback-state", "user-modify-playback-state"];
+const SCOPES = ["user-read-currently-playing", "user-read-playback-state", "user-modify-playback-state", "playlist-read-private"];
 
 const clientInput = document.querySelector("#clientId");
 const statusEl = document.querySelector("#status");
@@ -22,7 +22,7 @@ function loadPlexConfig() {
   plexUrlInput.value = config.plexUrl || "";
   plexTokenInput.value = config.plexToken || "";
   plexUsersInput.value = config.plexUsers || "";
-  plexEnabledInput.checked = config.enabled !== false;
+  plexEnabledInput.checked = config.enabled === true;
 }
 function savePlexConfig() {
   const config = {
