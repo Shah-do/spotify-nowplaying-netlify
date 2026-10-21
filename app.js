@@ -94,7 +94,7 @@ function randomString(length = 64) {
   const bytes = crypto.getRandomValues(new Uint8Array(length));
   return b64url(bytes);
 }
-async function authorize(mode) {
+async function authorize() {
   const clientId = clientInput.value.trim();
   if (!clientId) {
     statusEl.textContent = "Add your Spotify Client ID first.";
@@ -106,7 +106,6 @@ async function authorize(mode) {
     return;
   }
   localStorage.setItem(CLIENT_KEY, clientId);
-  localStorage.setItem("spotify_nowplaying_mode", mode);
   const verifier = randomString(64);
   sessionStorage.setItem("spotify_pkce_verifier", verifier);
   const challenge = await sha256(verifier);
@@ -120,10 +119,9 @@ async function authorize(mode) {
   });
   location.assign(`https://accounts.spotify.com/authorize?${params.toString()}`);
 }
-document.querySelector("#desktopBtn").addEventListener("click", () => authorize("desktop"));
-document.querySelector("#projectorBtn").addEventListener("click", () => authorize("projector"));
+document.querySelector("#nowPlayingBtn").addEventListener("click", () => authorize());
 disconnectBtn.addEventListener("click", () => {
-  for (const key of ["spotify_access_token", "spotify_refresh_token", "spotify_expires_at", "spotify_nowplaying_mode"]) localStorage.removeItem(key);
+  for (const key of ["spotify_access_token", "spotify_refresh_token", "spotify_expires_at"]) localStorage.removeItem(key);
   sessionStorage.removeItem("spotify_pkce_verifier");
   statusEl.textContent = "Disconnected on this browser. You can authorize again whenever you like.";
   disconnectBtn.hidden = true;
@@ -166,8 +164,7 @@ async function handleCallback() {
     localStorage.setItem("spotify_expires_at", String(Date.now() + data.expires_in * 1000));
     sessionStorage.removeItem("spotify_pkce_verifier");
     history.replaceState({}, "", BASE_PATH);
-    const mode = localStorage.getItem("spotify_nowplaying_mode") === "projector" ? "p.html" : "app.html";
-    location.replace(`${BASE_PATH}${mode}`);
+    location.replace(`${BASE_PATH}app.html`);
   } catch (err) {
     statusEl.textContent = `Could not finish login: ${err.message}. Confirm the exact Redirect URI in Spotify Developer Dashboard.`;
     history.replaceState({}, "", BASE_PATH);
