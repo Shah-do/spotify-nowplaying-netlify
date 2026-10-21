@@ -2,6 +2,23 @@
 
 A browser-only Spotify now-playing display with optional Plex integration. It uses Spotify Authorization Code with PKCE; no Spotify client secret or always-on backend is required.
 
+## Don't want to build or deploy it yourself?
+
+**Use the hosted version:** https://shah-do.github.io/spotify-nowplaying-netlify/
+
+1. Open the hosted link and enter your Spotify app's **Client ID**. If you don't have one, create an app at https://developer.spotify.com/dashboard.
+2. In your Spotify app settings, add this exact Redirect URI:
+   `https://shah-do.github.io/spotify-nowplaying-netlify/`
+3. Save the Spotify app settings, return to the hosted NowPlaying page, and choose **Desktop mode** or **Projector mode**.
+4. Approve the requested Spotify permissions. Plex is optional; leave it disabled if you only want Spotify.
+5. If you connected Spotify before artist portraits were added, disconnect and reconnect once to grant playlist access for the screensaver.
+
+This is for people who want to use the existing hosted version without downloading, editing, or deploying the project themselves. Your Spotify tokens and settings are stored in your browser profile, so use a trusted browser and don't share your profile.
+
+## Want to host your own copy?
+
+The instructions below are for people who want to deploy their own version.
+
 ## Quick start: deploy first, then configure Spotify
 
 Spotify requires the exact deployed URL as an allowed Redirect URI, so deploy the static files before finishing the Spotify Developer Dashboard setup.
