@@ -9,6 +9,18 @@ A browser-only Spotify now-playing display with optional Plex integration. It us
   <img src="https://github.com/user-attachments/assets/bfdc6916-8c10-42ff-958b-b0f404b222d0" alt="NowPlaying Plex movie screensaver" width="49%" />
 </p>
 
+## Features
+
+- **Spotify now playing:** album artwork, track and artist details, playback progress, and synced lyrics when available.
+- **Playback controls:** play/pause and skip to the next track. Controls are shown for Spotify playback; Plex playback is displayed without Spotify controls.
+- **Up-next preview:** shows the next track in your Spotify queue when the queue endpoint is available.
+- **Automatic screensaver rotation:** while idle, the display changes artwork approximately every **45 seconds**.
+- **Plex playback:** optionally show currently playing Plex movies and TV episodes, including artwork, episode details, progress, and available director/genre metadata.
+- **Plex movie screensaver:** when Plex is enabled, idle artwork can be drawn from the full movie library.
+- **Spotify artist screensaver:** when Plex is not enabled and Spotify is idle, the app can show artist portraits sourced from artists in playlists your Spotify account lets it read. Portrait availability depends on Spotify access and public images being found.
+- **Pause timeout:** if Spotify or Plex playback remains paused for **2 minutes**, the display returns to the available idle screensaver. Resuming playback brings the playback display back.
+- **Browser-only setup:** Spotify uses Authorization Code with PKCE. No Spotify client secret, app-owned backend, or always-on helper service is required.
+
 ## Don't want to build or deploy it yourself?
 
 **Use the hosted version:** https://shah-do.github.io/spotify-nowplaying-netlify/
