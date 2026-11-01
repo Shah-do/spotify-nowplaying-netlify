@@ -999,7 +999,7 @@ body.display.vinyl-mode.vinyl-paused .vinyl-tonearm{transform:rotate(-1deg)}
 body.display .vinyl-mode-toggle{
   position:fixed!important;left:clamp(16px,3vw,38px)!important;right:auto!important;
   top:auto!important;bottom:clamp(14px,2.5vh,26px)!important;z-index:120!important;
-  width:auto!important;height:54px!important;min-height:54px!important;
+  width:auto!important;height:68px!important;min-height:68px!important;
   padding:0 15px!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:14px!important;
   display:inline-flex!important;align-items:center!important;justify-content:center!important;
   background:rgba(7,9,12,.82)!important;color:#fff!important;
