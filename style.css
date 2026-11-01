@@ -1027,3 +1027,50 @@ body.display.vinyl-mode .vinyl-tonearm{width:24%!important;height:78%!important;
 body.display.vinyl-mode:not(.vinyl-paused) .vinyl-tonearm{transform:rotate(8deg)!important}
 body.display.vinyl-mode.vinyl-paused .vinyl-tonearm{transform:rotate(-3deg)!important}
 @media(max-width:760px){body.display .vinyl-mode-toggle{left:12px!important;bottom:12px!important;height:46px!important;min-height:46px!important;padding:0 12px!important;font-size:9px!important}}
+
+
+/* Vinyl scene refinement: keep the artwork sharp and the background softly defocused,
+   with a neutral smoky stage instead of a uniformly blurred full-screen image. */
+body.display.vinyl-mode{background:#858585!important;isolation:isolate}
+body.display.vinyl-mode .artist-backdrop{
+  display:block!important;position:fixed!important;inset:-4%!important;z-index:-2!important;
+  background-position:center 34%!important;background-size:cover!important;
+  filter:blur(34px) saturate(.72)!important;opacity:.48!important;transform:scale(1.1)!important;
+}
+body.display.vinyl-mode:after{
+  content:"";position:fixed;inset:0;z-index:-1!important;pointer-events:none;
+  background:linear-gradient(90deg,rgba(10,10,12,.16),rgba(10,10,12,.28) 52%,rgba(10,10,12,.12)),
+    linear-gradient(0deg,rgba(0,0,0,.54),rgba(255,255,255,.1) 55%,rgba(0,0,0,.12))!important;
+}
+body.display.vinyl-mode .vinyl-stage{z-index:4!important}
+body.display.vinyl-mode .vinyl-art-stack{filter:drop-shadow(0 20px 32px rgba(0,0,0,.25))}
+body.display.vinyl-mode .vinyl-current-sleeve{box-shadow:0 16px 42px rgba(0,0,0,.25)}
+body.display.vinyl-mode .vinyl-next-sleeve{transform:translate(5%,-7%) rotate(5.2deg)}
+body.display.vinyl-mode .vinyl-record{background:
+  radial-gradient(circle at 50% 50%,#222 0 8.5%,#090909 8.8% 14%,#171717 14.5% 15%,#070707 15.5% 28%,#151515 28.5% 29%,#070707 29.5% 43%,#151515 43.5% 44%,#070707 44.5% 58%,#151515 58.5% 59%,#070707 59.5% 73%,#171717 73.5% 74%,#050505 74.5% 100%)!important;
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.07),inset 0 0 25px #000,0 2px 3px rgba(255,255,255,.08)!important;
+}
+body.display.vinyl-mode .vinyl-grooves{
+  inset:3%!important;opacity:.85!important;
+  background:repeating-radial-gradient(circle at 50% 50%,rgba(255,255,255,.08) 0 .7px,transparent 1.2px 4px)!important;
+  mask-image:radial-gradient(circle,#000 0 98%,transparent 100%)!important;
+}
+body.display.vinyl-mode .vinyl-label{inset:34.5%!important;box-shadow:0 0 0 3px #101010,0 0 0 4px rgba(255,255,255,.14),inset 0 0 0 2px rgba(0,0,0,.08)!important}
+body.display.vinyl-mode .vinyl-spindle{width:5px!important;height:5px!important;z-index:2}
+body.display.vinyl-mode .vinyl-tonearm{
+  width:29%!important;height:82%!important;top:-1%!important;right:-1%!important;
+  transform-origin:75% 12%!important;transition:transform .65s ease!important;
+}
+body.display.vinyl-mode .vinyl-tonearm svg{overflow:visible!important}
+body.display.vinyl-mode .vinyl-tonearm .tonearm-pivot{
+  fill:rgba(18,18,18,.04)!important;stroke:#111!important;stroke-width:3!important;
+}
+body.display.vinyl-mode .vinyl-tonearm .tonearm-shaft{
+  stroke:#777!important;stroke-width:8!important;filter:drop-shadow(1px 1px 1px rgba(0,0,0,.35))!important;
+}
+body.display.vinyl-mode .vinyl-tonearm .tonearm-head{
+  fill:#171719!important;stroke:#090909!important;stroke-width:2!important;
+}
+body.display.vinyl-mode .vinyl-tonearm .tonearm-stylus{stroke:#aaa!important;stroke-width:2.5!important}
+body.display.vinyl-mode:not(.vinyl-paused) .vinyl-tonearm{transform:rotate(5deg)!important}
+body.display.vinyl-mode.vinyl-paused .vinyl-tonearm{transform:rotate(-2deg)!important}
