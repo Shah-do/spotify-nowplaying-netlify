@@ -30,7 +30,7 @@
   </div>
   <div class="vinyl-right-column"><div class="vinyl-turntable">
     <button class="vinyl-record-button" id="vinylRecordButton" type="button" aria-label="Play or pause"><span class="vinyl-record"><span class="vinyl-grooves"></span><span class="vinyl-label"><span class="vinyl-label-title" id="vinylLabelTitle">NOW PLAYING</span><span class="vinyl-spindle"></span></span></span></button>
-    <div class="vinyl-tonearm" id="vinylTonearm" aria-hidden="true"><span class="tonearm-pivot"></span><span class="tonearm-shaft"></span><span class="tonearm-head"></span></div>
+    <div class="vinyl-tonearm" id="vinylTonearm" aria-hidden="true"><svg viewBox="0 0 160 360" preserveAspectRatio="none"><circle class="tonearm-pivot" cx="120" cy="42" r="31"/><path class="tonearm-shaft" d="M120 42 L43 268"/><path class="tonearm-head" d="M43 268 L29 291 L49 302 L63 280 L43 268 Z"/><path class="tonearm-stylus" d="M48 300 L61 308"/></svg></div>
   </div><div class="vinyl-lyrics" aria-live="polite"><p id="vinylPrevLyric" class="vinyl-lyric dim"></p><p id="vinylCurrentLyric" class="vinyl-lyric current">Lyrics will appear here when available.</p><p id="vinylNextLyric" class="vinyl-lyric dim"></p></div></div>
 </section>
 <section id="screensaverCaption" class="screensaver-caption" hidden><div id="screensaverTitle" class="screensaver-title"></div><div id="screensaverYear" class="screensaver-year"></div></section><script src="display.js"></script><script src="plex-display.js"></script><script src="vinyl-mode.js"></script><script>if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(console.error)); }</script></body></html>
