@@ -12,6 +12,7 @@ let durationMs = 0;
 let paused = false;
 let lastLyricsLookup = "";
 
+window.nowPlayingApi = api;
 function formatTime(ms) {
   const total = Math.max(0, Math.floor(ms / 1000));
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
@@ -183,6 +184,10 @@ function renderLyrics() {
   $("prevLyric").textContent = currentIndex > 0 ? lyrics[currentIndex - 1].text : "";
   $("currentLyric").textContent = currentIndex >= 0 ? lyrics[currentIndex].text : "";
   $("nextLyric").textContent = nextIndex >= 0 && nextIndex < lyrics.length ? lyrics[nextIndex].text : "";
+  const vinylPrev=$("vinylPrevLyric"), vinylCurrent=$("vinylCurrentLyric"), vinylNext=$("vinylNextLyric");
+  if(vinylPrev) vinylPrev.textContent=currentIndex>0?lyrics[currentIndex-1].text:"";
+  if(vinylCurrent) vinylCurrent.textContent=currentIndex>=0?lyrics[currentIndex].text:"";
+  if(vinylNext) vinylNext.textContent=nextIndex>=0&&nextIndex<lyrics.length?lyrics[nextIndex].text:"";
 }
 async function update() {
   try {
