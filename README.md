@@ -9,6 +9,10 @@ A browser-only Spotify now-playing display with optional Plex integration. It us
   <img src="https://github.com/user-attachments/assets/bfdc6916-8c10-42ff-958b-b0f404b222d0" alt="NowPlaying Plex movie screensaver" width="49%" />
 </p>
 
+## Vinyl mode
+
+The display includes an optional **Vinyl mode** for Spotify playback. Use the button in the top-left of the display to switch between the classic player and the vinyl layout. It features the artist-image backdrop, a layered current/next album sleeve, a record label tinted to the current album artwork, a tonearm that changes position with playback state, and synced lyrics when available. Tap the record to play or pause; tap the exposed next sleeve to play that queued track.
+
 ## Features
 
 - **Spotify now playing:** album artwork, track and artist details, playback progress, and synced lyrics when available.
