@@ -1,4 +1,4 @@
-const CACHE_NAME = "nowplaying-shell-v34";
+const CACHE_NAME = "nowplaying-shell-v35";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -7,6 +7,7 @@ const APP_SHELL = [
   "./style.css",
   "./app.js",
   "./display.js",
+  "./vinyl-mode.js",
   "./plex-display.js",
   "./placeholder.svg",
   "./pwa-icon.svg",
