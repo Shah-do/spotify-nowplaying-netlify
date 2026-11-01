@@ -948,3 +948,48 @@ body.display.plex-mode #queueCard{display:none!important}
   body.display.projector .details h1 { font-size: clamp(2.2rem, 9vw, 3.2rem) !important; }
   body.display.desktop .player { padding: 18px !important; gap: 18px !important; }
 }
+
+
+/* Optional cinematic vinyl player mode */
+.vinyl-mode-toggle{pointer-events:auto;position:fixed;top:clamp(22px,4vh,42px);left:clamp(24px,3vw,48px);z-index:40;border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:10px 15px;background:rgba(12,13,15,.36);backdrop-filter:blur(14px);color:#fff;font:600 .72rem/1.2 inherit;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background .2s,border-color .2s}
+.vinyl-mode-toggle:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.5)}
+body.display.vinyl-mode .display-wrap,body.display.vinyl-mode #screensaverCaption{display:none!important}
+body.display.vinyl-mode .artist-backdrop{opacity:1!important;filter:blur(0)!important;transform:scale(1.045)!important}
+body.display.vinyl-mode .artist-backdrop:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,8,9,.48),rgba(8,8,9,.14) 60%,rgba(8,8,9,.42)),linear-gradient(0deg,rgba(0,0,0,.54),transparent 72%);backdrop-filter:saturate(.8)}
+body.display.vinyl-mode .vinyl-mode-toggle{background:rgba(10,10,10,.34);border-color:rgba(255,255,255,.18);opacity:.7}
+body.display.vinyl-mode .vinyl-mode-toggle:hover{opacity:1}
+.vinyl-stage{position:fixed;z-index:5;inset:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(28px,5vw,88px);padding:clamp(64px,8vh,100px) clamp(42px,7vw,120px) clamp(36px,5vh,64px);box-sizing:border-box;overflow:hidden}
+.vinyl-stage[hidden]{display:none!important}
+.vinyl-art-stack{position:relative;width:min(100%,min(42vw,68vh));aspect-ratio:1;justify-self:center;isolation:isolate;filter:drop-shadow(0 24px 38px rgba(0,0,0,.24))}
+.vinyl-current-sleeve,.vinyl-next-sleeve{position:absolute;inset:0;border-radius:9px;overflow:hidden}
+.vinyl-current-sleeve{z-index:2;background:#181818;box-shadow:0 16px 48px rgba(0,0,0,.34);transform:translate(-2%,2%)}
+.vinyl-current-sleeve>img,.vinyl-next-sleeve img{width:100%;height:100%;display:block;object-fit:cover}
+.vinyl-sleeve-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.48),transparent 44%),linear-gradient(0deg,rgba(0,0,0,.13),transparent 55%);pointer-events:none}
+.vinyl-next-sleeve{z-index:1;border:0;padding:0;background:#171717;cursor:pointer;transform:translate(5%,-7%) rotate(5.2deg);box-shadow:0 12px 30px rgba(0,0,0,.28);transition:transform .35s ease,filter .25s ease}
+.vinyl-next-sleeve:hover{transform:translate(8%,-10%) rotate(7deg);filter:brightness(1.1)}
+.vinyl-next-sleeve:disabled{cursor:default;filter:grayscale(1);opacity:.45}
+.vinyl-next-hint{position:absolute;right:12px;bottom:12px;padding:8px 10px;border-radius:4px;background:rgba(0,0,0,.66);color:#fff;font-size:clamp(8px,.7vw,11px);letter-spacing:.13em;opacity:0;transition:opacity .2s}
+.vinyl-next-sleeve:hover .vinyl-next-hint,.vinyl-next-sleeve:focus-visible .vinyl-next-hint{opacity:1}
+.vinyl-edge-label{position:absolute;z-index:3;left:clamp(12px,1.7vw,27px);top:5%;bottom:5%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:12px;writing-mode:vertical-rl;transform:rotate(180deg);color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.6);font-weight:650;letter-spacing:.045em;font-size:clamp(12px,1.45vw,23px);max-height:90%;pointer-events:none}
+.vinyl-edge-label span+span{font-size:.68em;font-weight:500;opacity:.9}
+.vinyl-right-column{width:100%;max-width:min(47vw,760px);justify-self:center;display:flex;flex-direction:column;align-items:center;gap:clamp(18px,3vh,36px)}
+.vinyl-turntable{position:relative;width:min(100%,min(38vw,62vh));aspect-ratio:1;display:grid;place-items:center;isolation:isolate}
+.vinyl-record-button{position:relative;z-index:1;width:100%;aspect-ratio:1;padding:0;border:0;border-radius:50%;background:transparent;cursor:pointer;touch-action:manipulation;filter:drop-shadow(0 18px 24px rgba(0,0,0,.3))}
+.vinyl-record-button:focus-visible{outline:2px solid rgba(255,255,255,.8);outline-offset:7px}
+.vinyl-record{position:absolute;inset:0;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 50%,#242424 0 9%,#080808 9.3% 16%,#151515 16.4% 24%,#080808 24.5% 37%,#1b1b1b 37.5% 38%,#080808 38.5% 56%,#191919 56.5% 57%,#080808 57.5% 75%,#161616 75.5% 76%,#050505 77%);border:1px solid rgba(255,255,255,.18);box-shadow:inset 0 0 0 5px rgba(255,255,255,.025),inset 0 0 28px #000;transition:filter .25s}
+.vinyl-grooves{position:absolute;inset:4%;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,transparent 0 3px,rgba(255,255,255,.075) 3.5px,transparent 4.2px,transparent 6.8px);mask-image:radial-gradient(circle,#000 0 76%,transparent 77%);opacity:.75}
+.vinyl-label{position:absolute;inset:34%;display:grid;place-items:center;border-radius:50%;background:var(--vinyl-label-color,var(--accent,#bc1864));box-shadow:0 0 0 1px rgba(255,255,255,.2),inset 0 0 0 3px rgba(0,0,0,.1);color:var(--vinyl-label-ink,#fff)}
+.vinyl-label-title{position:absolute;top:14%;left:8%;right:8%;font-size:clamp(7px,.65vw,10px);font-weight:700;letter-spacing:.08em;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
+.vinyl-spindle{width:6px;height:6px;border-radius:50%;background:#d5d5d5;box-shadow:0 0 0 2px rgba(0,0,0,.28)}
+.vinyl-tonearm{position:absolute;z-index:3;top:1%;right:0;width:24%;height:76%;transform-origin:82% 12%;transform:rotate(-1deg);transition:transform .65s cubic-bezier(.2,.75,.2,1);pointer-events:none}
+.tonearm-pivot{position:absolute;top:0;right:9%;width:43%;aspect-ratio:1;border:2px solid rgba(0,0,0,.85);border-radius:50%;background:rgba(255,255,255,.025);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.tonearm-shaft{position:absolute;top:18%;right:28%;height:70%;width:5px;border-radius:8px;background:linear-gradient(90deg,#333,#a9a9a9 42%,#454545);transform:rotate(20deg);transform-origin:top center;box-shadow:1px 0 2px rgba(0,0,0,.35)}
+.tonearm-head{position:absolute;right:17%;bottom:1%;width:23%;height:10%;border-radius:3px 3px 8px 3px;background:#191919;transform:rotate(28deg);box-shadow:0 1px 2px #000}
+body.display.vinyl-mode:not(.vinyl-paused) .vinyl-tonearm{transform:rotate(20deg)}
+body.display.vinyl-mode.vinyl-paused .vinyl-tonearm{transform:rotate(-1deg)}
+.vinyl-lyrics{width:100%;min-height:76px;text-align:center;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.65);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;max-width:680px}
+.vinyl-lyric{margin:0;line-height:1.3;font-size:clamp(12px,1.15vw,17px);font-weight:450;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vinyl-lyric.dim{opacity:.46;font-size:clamp(10px,.95vw,14px)}
+.vinyl-lyric.current{font-size:clamp(14px,1.45vw,21px);font-weight:600}
+@media(max-width:760px){.vinyl-mode-toggle{top:13px;left:14px;padding:9px 11px;font-size:9px}.vinyl-stage{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,1.15fr);gap:12px;padding:66px 24px 22px;overflow-y:auto;align-content:center}.vinyl-art-stack{width:min(64vw,31vh);min-width:180px;max-width:290px}.vinyl-right-column{width:100%;max-width:100%;gap:10px}.vinyl-turntable{width:min(57vw,29vh);min-width:160px;max-width:270px}.vinyl-lyrics{min-height:50px;gap:3px}.vinyl-lyric{font-size:12px}.vinyl-lyric.dim{font-size:10px}.vinyl-lyric.current{font-size:14px}.vinyl-edge-label{left:12px;font-size:12px}.vinyl-next-hint{opacity:1;font-size:8px}}
+@media(max-height:560px) and (min-width:761px){.vinyl-stage{padding-top:52px;padding-bottom:18px;gap:24px}.vinyl-art-stack{width:min(36vw,68vh)}.vinyl-turntable{width:min(31vw,65vh)}.vinyl-right-column{gap:10px}.vinyl-lyrics{min-height:46px}}
