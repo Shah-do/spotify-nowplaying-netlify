@@ -136,6 +136,9 @@ async function lookupLyrics(item) {
   lastLyricsLookup = key;
   lyrics = [];
   $("lyrics").hidden = true;
+  if($("vinylPrevLyric")) $("vinylPrevLyric").textContent="";
+  if($("vinylCurrentLyric")) $("vinylCurrentLyric").textContent="Lyrics unavailable for this track.";
+  if($("vinylNextLyric")) $("vinylNextLyric").textContent="";
 
   const artists = (item.artists || []).map(a => a.name).join(", ");
   const duration = Math.round((item.duration_ms || 0) / 1000);
