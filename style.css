@@ -993,3 +993,37 @@ body.display.vinyl-mode.vinyl-paused .vinyl-tonearm{transform:rotate(-1deg)}
 .vinyl-lyric.current{font-size:clamp(14px,1.45vw,21px);font-weight:600}
 @media(max-width:760px){.vinyl-mode-toggle{top:13px;left:14px;padding:9px 11px;font-size:9px}.vinyl-stage{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,1.15fr);gap:12px;padding:66px 24px 22px;overflow-y:auto;align-content:center}.vinyl-art-stack{width:min(64vw,31vh);min-width:180px;max-width:290px}.vinyl-right-column{width:100%;max-width:100%;gap:10px}.vinyl-turntable{width:min(57vw,29vh);min-width:160px;max-width:270px}.vinyl-lyrics{min-height:50px;gap:3px}.vinyl-lyric{font-size:12px}.vinyl-lyric.dim{font-size:10px}.vinyl-lyric.current{font-size:14px}.vinyl-edge-label{left:12px;font-size:12px}.vinyl-next-hint{opacity:1;font-size:8px}}
 @media(max-height:560px) and (min-width:761px){.vinyl-stage{padding-top:52px;padding-bottom:18px;gap:24px}.vinyl-art-stack{width:min(36vw,68vh)}.vinyl-turntable{width:min(31vw,65vh)}.vinyl-right-column{gap:10px}.vinyl-lyrics{min-height:46px}}
+
+
+/* Vinyl mode fixes: keep the clock clear, restore the soft backdrop, and make the tonearm one connected piece. */
+body.display .vinyl-mode-toggle{
+  position:fixed!important;left:clamp(16px,3vw,38px)!important;right:auto!important;
+  top:auto!important;bottom:clamp(14px,2.5vh,26px)!important;z-index:120!important;
+  width:auto!important;height:54px!important;min-height:54px!important;
+  padding:0 15px!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:14px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  background:rgba(7,9,12,.82)!important;color:#fff!important;
+  font:700 10px/1 inherit!important;letter-spacing:.12em!important;
+  box-shadow:none!important;backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;
+  opacity:.9!important;pointer-events:auto!important;cursor:pointer!important;
+}
+body.display .vinyl-mode-toggle:hover{opacity:1!important;background:rgba(18,20,24,.94)!important}
+body.display.vinyl-mode .artist-backdrop{
+  display:block!important;position:fixed!important;inset:-7%!important;z-index:0!important;
+  filter:blur(24px) saturate(1.1)!important;opacity:.76!important;transform:scale(1.08)!important;
+}
+body.display.vinyl-mode .artist-backdrop:after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(5,5,7,.46),rgba(5,5,7,.2) 58%,rgba(5,5,7,.44)),linear-gradient(0deg,rgba(0,0,0,.48),rgba(0,0,0,.08));
+}
+body.display.vinyl-mode .vinyl-stage{z-index:4!important}
+body.display.vinyl-mode .vinyl-tonearm{width:24%!important;height:78%!important;top:1%!important;right:-1%!important;transform-origin:75% 12%!important;transition:transform .65s cubic-bezier(.2,.75,.2,1)!important}
+.vinyl-tonearm svg{display:block;width:100%;height:100%;overflow:visible}
+.vinyl-tonearm .tonearm-pivot{fill:rgba(10,10,10,.1);stroke:rgba(5,5,5,.92);stroke-width:3.5}
+.vinyl-tonearm .tonearm-shaft{fill:none;stroke:#555;stroke-width:10;stroke-linecap:round;stroke-linejoin:round}
+.vinyl-tonearm .tonearm-shaft{filter:drop-shadow(1px 1px 1px rgba(0,0,0,.55))}
+.vinyl-tonearm .tonearm-head{fill:#171719;stroke:#090909;stroke-width:2;stroke-linejoin:round}
+.vinyl-tonearm .tonearm-stylus{fill:none;stroke:#b7b7b7;stroke-width:3;stroke-linecap:round}
+body.display.vinyl-mode:not(.vinyl-paused) .vinyl-tonearm{transform:rotate(8deg)!important}
+body.display.vinyl-mode.vinyl-paused .vinyl-tonearm{transform:rotate(-3deg)!important}
+@media(max-width:760px){body.display .vinyl-mode-toggle{left:12px!important;bottom:12px!important;height:46px!important;min-height:46px!important;padding:0 12px!important;font-size:9px!important}}
