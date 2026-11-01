@@ -4,7 +4,7 @@
 <meta name="theme-color" content="#080a0d"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="pwa-icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="pwa-icon.svg"><title>NowPlaying — Desktop</title><link rel="stylesheet" href="style.css"></head>
 <body class="display desktop">
 <div class="artist-backdrop" id="artistBackdrop" aria-hidden="true"></div>
-<header class="topbar"><span class="clock" id="clock">--:--</span><div class="topbar-actions"><button class="back" id="backBtn" aria-label="Back to setup">← Setup</button><span id="sourceBadge" class="source-badge" hidden aria-label="Current playback source"><img id="sourceBadgeIcon" alt="" src="" /></span></div></header>
+<header class="topbar"><span class="clock" id="clock">--:--</span><div class="topbar-actions"><button class="back" id="backBtn" aria-label="Back to setup">← Setup</button><button class="vinyl-mode-toggle" id="vinylModeBtn" type="button" aria-pressed="false">Vinyl mode</button><span id="sourceBadge" class="source-badge" hidden aria-label="Current playback source"><img id="sourceBadgeIcon" alt="" src="" /></span></div></header>
 <main class="display-wrap">
   <section class="player">
     <img id="cover" class="cover" alt="Album artwork" src="placeholder.svg">
@@ -22,4 +22,15 @@
 
   </section>
   <aside class="queue-card empty" id="queueCard"><img id="queueCover" class="queue-cover" src="placeholder.svg" alt=""><div class="queue-copy"><div class="queue-label">Up next</div><div id="queueTitle" class="queue-title">Checking queue…</div><div id="queueArtist" class="queue-artist">Spotify queue</div></div></aside>
-</main><section id="screensaverCaption" class="screensaver-caption" hidden><div id="screensaverTitle" class="screensaver-title"></div><div id="screensaverYear" class="screensaver-year"></div></section><script src="display.js"></script><script src="plex-display.js"></script><script>if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(console.error)); }</script></body></html>
+</main>
+<section class="vinyl-stage" id="vinylStage" aria-label="Spotify vinyl player" hidden>
+  <div class="vinyl-art-stack">
+    <button class="vinyl-next-sleeve" id="vinylNextSleeve" type="button" aria-label="Play next queued track" title="Play this queued track"><img id="vinylNextCover" src="placeholder.svg" alt="Next queued album cover"><span class="vinyl-next-hint">UP NEXT · TAP TO PLAY</span></button>
+    <div class="vinyl-current-sleeve" id="vinylCurrentSleeve"><img id="vinylCurrentCover" src="placeholder.svg" alt="Current album cover"><div class="vinyl-sleeve-shade"></div><div class="vinyl-edge-label"><span id="vinylTrack">Waiting for playback</span><span id="vinylArtist">Spotify</span></div></div>
+  </div>
+  <div class="vinyl-right-column"><div class="vinyl-turntable">
+    <button class="vinyl-record-button" id="vinylRecordButton" type="button" aria-label="Play or pause"><span class="vinyl-record"><span class="vinyl-grooves"></span><span class="vinyl-label"><span class="vinyl-label-title" id="vinylLabelTitle">NOW PLAYING</span><span class="vinyl-spindle"></span></span></span></button>
+    <div class="vinyl-tonearm" id="vinylTonearm" aria-hidden="true"><span class="tonearm-pivot"></span><span class="tonearm-shaft"></span><span class="tonearm-head"></span></div>
+  </div><div class="vinyl-lyrics" aria-live="polite"><p id="vinylPrevLyric" class="vinyl-lyric dim"></p><p id="vinylCurrentLyric" class="vinyl-lyric current">Lyrics will appear here when available.</p><p id="vinylNextLyric" class="vinyl-lyric dim"></p></div></div>
+</section>
+<section id="screensaverCaption" class="screensaver-caption" hidden><div id="screensaverTitle" class="screensaver-title"></div><div id="screensaverYear" class="screensaver-year"></div></section><script src="display.js"></script><script src="plex-display.js"></script><script src="vinyl-mode.js"></script><script>if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(console.error)); }</script></body></html>
